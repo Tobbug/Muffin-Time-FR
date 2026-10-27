@@ -238,8 +238,8 @@
             color: #a0aec0;
         }
 
-        /* Conteneurs en mode swipe horizontal (Éventail fixe pour Jeu et Pièges) */
-        #tablejeu, #tabletrap {
+        /* Conteneur principal de la main en mode swipe horizontal (Éventail) */
+        #tablejeu {
             display: flex;
             overflow-x: auto;
             scroll-snap-type: x mandatory;
@@ -252,23 +252,48 @@
             -webkit-overflow-scrolling: touch;
         }
 
-        #tablejeu::-webkit-scrollbar, #tabletrap::-webkit-scrollbar {
+        #tablejeu::-webkit-scrollbar {
             display: none;
         }
 
-        #tablejeu > div, #tabletrap > div {
+        #tablejeu > div {
             flex: 0 0 220px;
             scroll-snap-align: center;
             position: relative;
+            transition: transform 0.3s ease, z-index 0.3s ease;
             transform-origin: bottom center;
         }
 
-        /* Inclinaison statique en éventail */
-        #tablejeu > div:nth-child(5n-4), #tabletrap > div:nth-child(5n-4) { transform: rotate(-12deg) translateY(15px); }
-        #tablejeu > div:nth-child(5n-3), #tabletrap > div:nth-child(5n-3) { transform: rotate(-6deg) translateY(5px); }
-        #tablejeu > div:nth-child(5n-2), #tabletrap > div:nth-child(5n-2) { transform: rotate(0deg) translateY(0px); }
-        #tablejeu > div:nth-child(5n-1), #tabletrap > div:nth-child(5n-1) { transform: rotate(6deg) translateY(5px); }
-        #tablejeu > div:nth-child(5n),   #tabletrap > div:nth-child(5n)   { transform: rotate(12deg) translateY(15px); }
+        /* Inclinaison statique en éventail pour le jeu */
+        #tablejeu > div:nth-child(5n-4) { transform: rotate(-12deg) translateY(15px); }
+        #tablejeu > div:nth-child(5n-3) { transform: rotate(-6deg) translateY(5px); }
+        #tablejeu > div:nth-child(5n-2) { transform: rotate(0deg) translateY(0px); }
+        #tablejeu > div:nth-child(5n-1) { transform: rotate(6deg) translateY(5px); }
+        #tablejeu > div:nth-child(5n)   { transform: rotate(12deg) translateY(15px); }
+
+        /* Animation au survol (PC) ou actif (Mobile) pour passer au premier plan */
+        #tablejeu > div:hover, 
+        #tablejeu > div.card-active {
+            transform: translateY(-40px) scale(1.15) rotate(0deg) !important;
+            z-index: 100 !important;
+        }
+
+        /* Conteneur pour les pièges actifs (centré) */
+        #tabletrap {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            padding: 40px 20px;
+            width: 100%;
+            box-sizing: border-box;
+            flex-wrap: wrap;
+        }
+
+        #tabletrap > div {
+            flex: 0 0 220px;
+            position: relative;
+        }
 
         #tablejeu .trash, #tabletrap .trash {
             position: absolute;
@@ -399,6 +424,27 @@
             }
         });
 
+        // Gestion du clic sur mobile pour basculer l'état "actif" (premier plan) d'une carte en main
+        document.addEventListener('click', function(event) {
+            let tablejeu = document.getElementById('tablejeu');
+            let cardDiv = event.target.closest('#tablejeu > div');
+            
+            // Si on clique sur une carte de la main
+            if (cardDiv) {
+                // Retire la classe active des autres cartes
+                Array.from(tablejeu.children).forEach(child => {
+                    if (child !== cardDiv) child.classList.remove('card-active');
+                });
+                // Bascule l'état sur la carte cliquée
+                cardDiv.classList.toggle('card-active');
+            } else {
+                // Si on clique en dehors, on remet toutes les cartes à plat
+                Array.from(tablejeu.children).forEach(child => {
+                    child.classList.remove('card-active');
+                });
+            }
+        });
+
         function saveState() {
             localStorage.setItem('muffin_activeCards', JSON.stringify(activeCards));
             localStorage.setItem('muffin_activeTraps', JSON.stringify(activeTraps));
@@ -502,7 +548,6 @@
         }
 
         function gotrap(img, btnId, element, coul) {
-            // Limite fixée à 3 pièges actifs max
             if (activeTraps.length >= 3) {
                 alert("Vous ne pouvez pas avoir plus de 3 pièges actifs en même temps !");
                 return;
