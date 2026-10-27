@@ -40,7 +40,7 @@
             color: var(--text-dark);
         }
 
-        /* En-tête de recherche et contrôles (Corrigé pour mobile) */
+        /* En-tête de recherche et contrôles */
         .search-bar {
             position: sticky;
             top: 0;
@@ -50,7 +50,7 @@
             justify-content: center;
             align-items: center;
             gap: 10px;
-            flex-wrap: wrap; /* Permet aux éléments de passer à la ligne sur mobile */
+            flex-wrap: wrap;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             transition: var(--transition);
         }
@@ -90,7 +90,6 @@
             transform: scale(1.05);
         }
 
-        /* Ajustement spécifique pour les petits écrans (smartphones) */
         @media (max-width: 768px) {
             .search-bar {
                 gap: 8px;
@@ -99,7 +98,7 @@
             
             input[type="text"] {
                 width: 100%;
-                order: -1; /* La barre de recherche prend toute la largeur en premier */
+                order: -1;
             }
 
             button {
@@ -108,7 +107,6 @@
             }
         }
 
-        /* Tableau des cartes principal */
         #myTable {
             width: 90%;
             max-width: 1200px;
@@ -131,7 +129,6 @@
         .tdlight { background-color: #fff; color: #2d3748; }
         .tddark { background-color: #2d3748; color: #e2e8f0; }
 
-        /* Vues de jeu / Pièges / Règles */
         .view-container {
             display: none;
             padding: 20px;
@@ -161,7 +158,6 @@
             width: 100%;
         }
 
-        /* Overlay d'affichage d'une carte en grand */
         #demo {
             position: fixed;
             inset: 0;
@@ -179,7 +175,6 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         }
 
-        /* Badge compteur de cartes */
         .badge-wrapper {
             position: relative;
             display: inline-block;
@@ -245,7 +240,6 @@
             transform-origin: bottom center;
         }
 
-        /* Inclinaison automatique en éventail */
         #tablejeu > div:nth-child(5n-4) { transform: rotate(-12deg) translateY(15px); }
         #tablejeu > div:nth-child(5n-3) { transform: rotate(-6deg) translateY(5px); }
         #tablejeu > div:nth-child(5n-2) { transform: rotate(0deg) translateY(0px); }
@@ -367,11 +361,14 @@
                     let isInTrap = activeTraps.some(t => t.btnId === `btn-${ip}`);
                     let displayStyle = (isInGame || isInTrap) ? 'display: none;' : '';
 
+                    // Échappement propre des guillemets/apostrophes pour l'attribut HTML pour éviter les bugs JS
+                    let safeNom = card.nom.replace(/'/g, "&#39;");
+
                     aff += `<tr data-type="${coul}">
                         <td align="center" width="70%" class="tdlight ${coul}" style="background-color:${typecol}; border-radius: 8px 0 0 8px;">${card.nom}</td>
                         <td width="30%" align="center" class="tdlight" style="border-radius: 0 8px 8px 0;">
-                            <button id="btn-${ip}" onclick="add('${card.photo}', 'btn-${ip}', '${card.nom}')" name="${card.photo}" style="background-image: url(images/plus.png); width:45px; height:45px; ${displayStyle}"></button>
-                            <button onclick="affphoto('${card.photo}')" name="${card.photo}" style="background-image: url(images/oeil.png); width:45px; height:45px; margin-left: 5px;"></button>
+                            <button id="btn-${ip}" onclick="add('${card.photo}', 'btn-${ip}')" style="background-image: url(images/plus.png); width:45px; height:45px; ${displayStyle}"></button>
+                            <button onclick="affphoto('${card.photo}')" style="background-image: url(images/oeil.png); width:45px; height:45px; margin-left: 5px;"></button>
                         </td>
                     </tr>`;
                 });
