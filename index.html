@@ -373,7 +373,7 @@
     </div>
 
     <script>
-        let light = 0, colsel = "", gameColsel = "", trapColsel = "";
+        let light = 0, colsel = "", gameColsel = "";
         let activeCards = JSON.parse(localStorage.getItem('muffin_activeCards')) || [];
         let activeTraps = JSON.parse(localStorage.getItem('muffin_activeTraps')) || [];
 
@@ -522,22 +522,20 @@
         }
 
         function hidejeu() {
+            colsel = ""; document.getElementById('myBtn').style.backgroundImage = 'url(images/RGB.png)';
             document.getElementById('myTable').style.display = "table";
             document.getElementById('jeu').style.display = "none";
             document.getElementById('search').style.display = "flex";
         }
 
         function afftrap() {
-            trapColsel = "";
-            document.getElementById('myTrapBtn').style.backgroundImage = 'url(images/RGB.png)';
-            filterTrapCards();
-
             document.getElementById('trap').style.display = "flex";
             document.getElementById('myTable').style.display = "none";
             document.getElementById('search').style.display = "none";
         }
 
         function hidetrap() {
+            colsel = ""; document.getElementById('myBtn').style.backgroundImage = 'url(images/RGB.png)';
             document.getElementById('myTable').style.display = "table";
             document.getElementById('trap').style.display = "none";
             document.getElementById('search').style.display = "flex";
@@ -564,7 +562,7 @@
 
         function gotrap(img, btnId, element, coul) {
             if (activeTraps.length >= 3) {
-                alert("Vous ne pouvez pas avoir plus de 3 pièges actifs en même temps !");
+                alert("3 pièges actifs Max !");
                 return;
             }
 
@@ -673,26 +671,6 @@
             for (let card of cards) {
                 let cardType = card.getAttribute("data-type");
                 if (gameColsel === "" || cardType === gameColsel) {
-                    card.style.display = "block";
-                } else {
-                    card.style.display = "none";
-                }
-            }
-        }
-
-        function RGBTrap() {
-            if (trapColsel === "") { trapColsel = "Red"; document.getElementById('myTrapBtn').style.backgroundImage = 'url(images/R.png)'; }
-            else if (trapColsel === "Red") { trapColsel = "Green"; document.getElementById('myTrapBtn').style.backgroundImage = 'url(images/G.png)'; }
-            else if (trapColsel === "Green") { trapColsel = "Blue"; document.getElementById('myTrapBtn').style.backgroundImage = 'url(images/B.png)'; }
-            else { trapColsel = ""; document.getElementById('myTrapBtn').style.backgroundImage = 'url(images/RGB.png)'; }
-            filterTrapCards();
-        }
-
-        function filterTrapCards() {
-            let cards = document.getElementById("tabletrap").children;
-            for (let card of cards) {
-                let cardType = card.getAttribute("data-type");
-                if (trapColsel === "" || cardType === trapColsel) {
                     card.style.display = "block";
                 } else {
                     card.style.display = "none";
