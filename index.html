@@ -248,7 +248,7 @@
             color: #a0aec0;
         }
 
-        /* Conteneur principal de la main en mode swipe horizontal (Éventail) */
+        /* Conteneur principal de la main en mode swipe horizontal (Éventail fixe sans animation hover) */
         #tablejeu {
             display: flex;
             overflow-x: auto;
@@ -270,21 +270,15 @@
             flex: 0 0 220px;
             scroll-snap-align: center;
             position: relative;
-            transition: transform 0.3s ease, z-index 0.3s ease;
             transform-origin: bottom center;
         }
 
+        /* Inclinaison statique en éventail */
         #tablejeu > div:nth-child(5n-4) { transform: rotate(-12deg) translateY(15px); }
         #tablejeu > div:nth-child(5n-3) { transform: rotate(-6deg) translateY(5px); }
         #tablejeu > div:nth-child(5n-2) { transform: rotate(0deg) translateY(0px); }
         #tablejeu > div:nth-child(5n-1) { transform: rotate(6deg) translateY(5px); }
         #tablejeu > div:nth-child(5n)   { transform: rotate(12deg) translateY(15px); }
-
-        #tablejeu > div:hover, 
-        #tablejeu > div:active {
-            transform: translateY(-40px) scale(1.15) rotate(0deg) !important;
-            z-index: 100 !important;
-        }
 
         #tablejeu .trash {
             position: absolute;
@@ -341,6 +335,8 @@
     <div id="jeu" class="view-container">
         <div id="fdiv" class="fdiv fdivlight">
             <button class="action-btn" onclick="hidejeu()">Retour</button>
+            <!-- Bouton de filtre RGB pour trier les cartes en main par type -->
+            <button style="background-image: url(images/RGB.png);" onclick="RGBGame()" id="myGameBtn" title="Filtrer par type en main"></button>
             <button class="action-btn danger-btn" onclick="clearGame()">Tout effacer</button>
         </div>
         <div id="tablejeu" class="grid-tables"></div>
@@ -367,7 +363,7 @@
     </div>
 
     <script>
-        let light = 0, colsel = "";
+        let light = 0, colsel = "", gameColsel = "";
         let activeCards = JSON.parse(localStorage.getItem('muffin_activeCards')) || [];
         let activeTraps = JSON.parse(localStorage.getItem('muffin_activeTraps')) || [];
 
@@ -387,18 +383,18 @@
                     let typecol = "rgba(0, 0, 255, 0.15)";
                     let coul = "Blue";
 
-                    if (card.type === 'action') { typecol = "rgba(0, 0, 255, 0.15)"; coul = "Blue"; }
-                    else if (card.type === 'counter') { typecol = "rgba(0, 128, 0, 0.15)"; coul = "Green"; }
-                    else if (card.type === 'trap') { typecol = "rgba(255, 0, 0, 0.15)"; coul = "Red"; }
+                    if (card.type === 'action') { typecol = "rgba(0, 0, 255, 0.15);"; coul = "Blue"; }
+                    else if (card.type === 'counter') { typecol = "rgba(0, 128, 0, 0.15);"; coul = "Green"; }
+                    else if (card.type === 'trap') { typecol = "rgba(255, 0, 0, 0.15);"; coul = "Red"; }
 
                     let isInGame = activeCards.some(c => c.btnId === `btn-${ip}`);
                     let isInTrap = activeTraps.some(t => t.btnId === `btn-${ip}`);
                     let displayStyle = (isInGame || isInTrap) ? 'display: none;' : '';
 
                     aff += `<tr data-type="${coul}">
-                        <td align="center" width="70%" class="tdlight ${coul}" style="background-color:${typecol}; border-radius: 8px 0 0 8px;">${card.nom}</td>
+                        <td align="center" width="70%" class="tdlight ${coul}" style="background-color:${typecol} border-radius: 8px 0 0 8px;">${card.nom}</td>
                         <td width="30%" align="center" class="tdlight" style="border-radius: 0 8px 8px 0;">
-                            <button id="btn-${ip}" onclick="add('${card.photo}', 'btn-${ip}')" style="background-image: url(images/plus.png); width:45px; height:45px; ${displayStyle}"></button>
+                            <button id="btn-${ip}" onclick="add('${card.photo}', 'btn-${ip}', '${coul}')" style="background-image: url(images/plus.png); width:45px; height:45px; ${displayStyle}"></button>
                             <button onclick="affphoto('${card.photo}')" style="background-image: url(images/oeil.png); width:45px; height:45px; margin-left: 5px;"></button>
                         </td>
                     </tr>`;
@@ -419,28 +415,30 @@
 
         function restoreSavedState() {
             activeCards.forEach(item => {
-                renderCardElement(item.img, item.btnId, "tablejeu", "div-");
+                renderCardElement(item.img, item.btnId, "tablejeu", "div-", item.coul);
             });
             activeTraps.forEach(item => {
-                renderCardElement(item.img, item.btnId, "tabletrap", "tdiv-");
+                renderCardElement(item.img, item.btnId, "tabletrap", "tdiv-", item.coul);
             });
             updateBadge();
         }
 
-        function renderCardElement(img, btnId, targetTableId, divPrefix) {
+        function renderCardElement(img, btnId, targetTableId, divPrefix, coul = "Blue") {
             let container = document.createElement("div");
             container.style.position = 'relative';
             container.id = divPrefix + btnId;
+            container.setAttribute("data-type", coul);
             
             let trashAction = targetTableId === "tablejeu" ? `deleteimg('${btnId}', this.parentElement)` : `deletetrap('${btnId}', this.parentElement)`;
             let content = `<img src="images/${img}.png" width="100%" style="border-radius:8px;"><button class="trash" onclick="${trashAction}">🗑️</button>`;
             
             if (img.includes('trap') && targetTableId === "tablejeu") {
-                content += `<button class="trap-btn" onclick="gotrap('${img}', '${btnId}', this.parentElement)">⚠️</button>`;
+                content += `<button class="trap-btn" onclick="gotrap('${img}', '${btnId}', this.parentElement, '${coul}')">⚠️</button>`;
             }
             
             container.innerHTML = content;
             document.getElementById(targetTableId).appendChild(container);
+            filterGameCards();
         }
 
         function theme() {
@@ -493,13 +491,13 @@
             document.getElementById('search').style.display = "flex";
         }
 
-        function add(img, btnId) {
+        function add(img, btnId, coul) {
             let btn = document.getElementById(btnId);
             if(btn) btn.style.display = "none";
 
-            activeCards.push({ img, btnId });
+            activeCards.push({ img, btnId, coul });
             saveState();
-            renderCardElement(img, btnId, "tablejeu", "div-");
+            renderCardElement(img, btnId, "tablejeu", "div-", coul);
         }
 
         function deleteimg(btnId, element) {
@@ -511,13 +509,13 @@
             element.remove();
         }
 
-        function gotrap(img, btnId, element) {
+        function gotrap(img, btnId, element, coul) {
             activeCards = activeCards.filter(c => c.btnId !== btnId);
             element.remove();
 
-            activeTraps.push({ img, btnId });
+            activeTraps.push({ img, btnId, coul });
             saveState();
-            renderCardElement(img, btnId, "tabletrap", "tdiv-");
+            renderCardElement(img, btnId, "tabletrap", "tdiv-", coul);
         }
 
         function deletetrap(btnId, element) {
@@ -593,8 +591,24 @@
             search();
         }
 
-        function grid(tableId, cols) {
-            document.getElementById(tableId).style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+        function RGBGame() {
+            if (gameColsel === "") { gameColsel = "Red"; document.getElementById('myGameBtn').style.backgroundImage = 'url(images/R.png)'; }
+            else if (gameColsel === "Red") { gameColsel = "Green"; document.getElementById('myGameBtn').style.backgroundImage = 'url(images/G.png)'; }
+            else if (gameColsel === "Green") { gameColsel = "Blue"; document.getElementById('myGameBtn').style.backgroundImage = 'url(images/B.png)'; }
+            else { gameColsel = ""; document.getElementById('myGameBtn').style.backgroundImage = 'url(images/RGB.png)'; }
+            filterGameCards();
+        }
+
+        function filterGameCards() {
+            let cards = document.getElementById("tablejeu").children;
+            for (let card of cards) {
+                let cardType = card.getAttribute("data-type");
+                if (gameColsel === "" || cardType === gameColsel) {
+                    card.style.display = "block";
+                } else {
+                    card.style.display = "none";
+                }
+            }
         }
     </script>
 </body>
