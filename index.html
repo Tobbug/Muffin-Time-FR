@@ -107,6 +107,7 @@
             }
         }
 
+        /* Tableau des cartes principal */
         #myTable {
             width: 90%;
             max-width: 1200px;
@@ -126,26 +127,41 @@
             font-weight: 600;
         }
 
-        /* Style pour forcer les boutons de la ligne à rester côte à côte */
-#myTable td:last-child {
-    white-space: nowrap; /* Empêche tout retour à la ligne automatique */
-    text-align: center;
-}
-
-/* Réduction de la taille et de l'espacement des boutons sur mobile pour rester compacts */
-@media (max-width: 768px) {
-    #myTable button {
-        width: 38px !important;  /* Réduit la largeur du bouton */
-        height: 38px !important; /* Réduit la hauteur du bouton */
-        padding: 0 !important;
-        margin: 0 2px !important; /* Petit espace horizontal entre les deux */
-        display: inline-block !important;
-        vertical-align: middle;
-    }
-}
+        /* Empêche les boutons de passer à la ligne et les garde côte à côte */
+        #myTable td:last-child {
+            white-space: nowrap;
+            text-align: center;
+        }
 
         .tdlight { background-color: #fff; color: #2d3748; }
         .tddark { background-color: #2d3748; color: #e2e8f0; }
+
+        /* Ajustements du tableau et du texte sur mobile */
+        @media (max-width: 768px) {
+            #myTable td:first-child {
+                font-size: 0.95rem;
+                padding: 10px 8px;
+            }
+
+            #myTable td {
+                padding: 8px 5px;
+            }
+
+            #myTable {
+                width: 95%;
+                border-spacing: 0 6px;
+            }
+
+            /* Boutons plus et œil compacts sur mobile pour garder la ligne bien alignée */
+            #myTable button {
+                width: 38px !important;
+                height: 38px !important;
+                padding: 0 !important;
+                margin: 0 2px !important;
+                display: inline-block !important;
+                vertical-align: middle;
+            }
+        }
 
         .view-container {
             display: none;
@@ -378,9 +394,6 @@
                     let isInGame = activeCards.some(c => c.btnId === `btn-${ip}`);
                     let isInTrap = activeTraps.some(t => t.btnId === `btn-${ip}`);
                     let displayStyle = (isInGame || isInTrap) ? 'display: none;' : '';
-
-                    // Échappement propre des guillemets/apostrophes pour l'attribut HTML pour éviter les bugs JS
-                    let safeNom = card.nom.replace(/'/g, "&#39;");
 
                     aff += `<tr data-type="${coul}">
                         <td align="center" width="70%" class="tdlight ${coul}" style="background-color:${typecol}; border-radius: 8px 0 0 8px;">${card.nom}</td>
