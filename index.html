@@ -126,6 +126,24 @@
             font-weight: 600;
         }
 
+        /* Style pour forcer les boutons de la ligne à rester côte à côte */
+#myTable td:last-child {
+    white-space: nowrap; /* Empêche tout retour à la ligne automatique */
+    text-align: center;
+}
+
+/* Réduction de la taille et de l'espacement des boutons sur mobile pour rester compacts */
+@media (max-width: 768px) {
+    #myTable button {
+        width: 38px !important;  /* Réduit la largeur du bouton */
+        height: 38px !important; /* Réduit la hauteur du bouton */
+        padding: 0 !important;
+        margin: 0 2px !important; /* Petit espace horizontal entre les deux */
+        display: inline-block !important;
+        vertical-align: middle;
+    }
+}
+
         .tdlight { background-color: #fff; color: #2d3748; }
         .tddark { background-color: #2d3748; color: #e2e8f0; }
 
