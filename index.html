@@ -256,7 +256,7 @@
             max-width: 1000px;
             box-sizing: border-box;
             align-items: center;
-            justify-content: center; /* Centré horizontalement */
+            justify-content: center;
             -webkit-overflow-scrolling: touch;
         }
 
@@ -264,22 +264,19 @@
             display: none;
         }
 
-        /* Cartes compactes avec chevauchement via margin-left négatif */
         #tablejeu > div, #tabletrap > div {
             flex: 0 0 160px;
             scroll-snap-align: center;
             position: relative;
             transition: transform 0.3s ease, z-index 0.3s ease;
             transform-origin: bottom center;
-            margin-left: -50px; /* Chevauchement des cartes */
+            margin-left: -50px;
         }
 
-        /* La toute première carte n'a pas de marge négative à gauche */
         #tablejeu > div:first-child, #tabletrap > div:first-child {
             margin-left: 0;
         }
 
-        /* Effet au survol (PC) ou actif (Mobile) pour passer au premier plan */
         #tablejeu > div:hover, #tabletrap > div:hover,
         #tablejeu > div.card-active, #tabletrap > div.card-active {
             transform: rotate(0deg) !important;
@@ -464,7 +461,6 @@
             document.getElementById(targetTableId).appendChild(container);
             updateFanRotations(targetTableId);
             if (targetTableId === "tablejeu") filterGameCards();
-            if (targetTableId === "tabletrap") filterTrapCards();
         }
 
         function updateFanRotations(tableId) {
@@ -521,7 +517,8 @@
         }
 
         function hidejeu() {
-            colsel = ""; document.getElementById('myBtn').style.backgroundImage = 'url(images/RGB.png)';
+            colsel = ""; 
+            document.getElementById('myBtn').style.backgroundImage = 'url(images/RGB.png)';
             document.getElementById('myTable').style.display = "table";
             document.getElementById('jeu').style.display = "none";
             document.getElementById('search').style.display = "flex";
@@ -534,7 +531,8 @@
         }
 
         function hidetrap() {
-            colsel = ""; document.getElementById('myBtn').style.backgroundImage = 'url(images/RGB.png)';
+            colsel = ""; 
+            document.getElementById('myBtn').style.backgroundImage = 'url(images/RGB.png)';
             document.getElementById('myTable').style.display = "table";
             document.getElementById('trap').style.display = "none";
             document.getElementById('search').style.display = "flex";
