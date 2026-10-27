@@ -265,16 +265,16 @@
         }
 
         /* Inclinaison statique en éventail pour le jeu */
-        #tablejeu > div:nth-child(5n-4) { transform: rotate(-12deg) translateY(15px); }
+        #tablejeu > div:nth-child(5n-4) { transform: rotate(-10deg) translateY(15px); }
         #tablejeu > div:nth-child(5n-3) { transform: rotate(-6deg) translateY(5px); }
         #tablejeu > div:nth-child(5n-2) { transform: rotate(0deg) translateY(0px); }
         #tablejeu > div:nth-child(5n-1) { transform: rotate(6deg) translateY(5px); }
-        #tablejeu > div:nth-child(5n)   { transform: rotate(12deg) translateY(15px); }
+        #tablejeu > div:nth-child(5n)   { transform: rotate(10deg) translateY(15px); }
 
         /* Animation au survol (PC) ou actif (Mobile) pour passer au premier plan */
         #tablejeu > div:hover, 
         #tablejeu > div.card-active {
-            transform: translateY(-40px) scale(1.15) rotate(0deg) !important;
+            transform: rotate(0deg) !important;
             z-index: 100 !important;
         }
 
