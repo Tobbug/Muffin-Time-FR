@@ -433,7 +433,7 @@
             let content = `<img src="images/${img}.png" width="100%" style="border-radius:8px;"><button class="trash" onclick="${trashAction}">🗑️</button>`;
             
             if (img.includes('trap') && targetTableId === "tablejeu") {
-                content += `<button class="trap-btn" onclick="gotrap('${img}', '${btnId}', this.parentElement, '${coul}')">⚠️</button>`;
+                content += `<button class="trap-btn" onclick="gotrap('${img}', '${btnId}', this.parentElement, '${coul}')">🪤</button>`;
             }
             
             container.innerHTML = content;
