@@ -245,18 +245,18 @@
             color: #a0aec0;
         }
 
-        /* Conteneurs en mode swipe horizontal (Éventail avec chevauchement) */
+        /* Conteneurs en mode swipe horizontal (Éventail corrigé pour laisser voir la 1ère carte) */
         #tablejeu, #tabletrap {
             display: flex;
             overflow-x: auto;
             scroll-snap-type: x mandatory;
             gap: 0px;
-            padding: 40px 20px;
+            padding: 40px 30px;
             width: 100%;
             max-width: 1000px;
             box-sizing: border-box;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start; /* Aligné au début pour que la première carte soit toujours visible */
             -webkit-overflow-scrolling: touch;
         }
 
@@ -274,7 +274,7 @@
         }
 
         #tablejeu > div:first-child, #tabletrap > div:first-child {
-            margin-left: 0;
+            margin-left: 20px; /* Marge à gauche pour éviter que la première carte soit coupée */
         }
 
         #tablejeu > div:hover, #tabletrap > div:hover,
@@ -392,14 +392,10 @@
                     else if (card.type === 'counter') { typecol = "rgba(0, 128, 0, 0.15);"; coul = "Green"; }
                     else if (card.type === 'trap') { typecol = "rgba(255, 0, 0, 0.15);"; coul = "Red"; }
 
-                    let isInGame = activeCards.some(c => c.btnId === `btn-${ip}`);
-                    let isInTrap = activeTraps.some(t => t.btnId === `btn-${ip}`);
-                    let displayStyle = (isInGame || isInTrap) ? 'display: none;' : '';
-
                     aff += `<tr data-type="${coul}">
                         <td align="center" width="70%" class="tdlight ${coul}" style="background-color:${typecol} border-radius: 8px 0 0 8px;">${card.nom}</td>
                         <td width="30%" align="center" class="tdlight" style="border-radius: 0 8px 8px 0;">
-                            <button id="btn-${ip}" onclick="add('${card.photo}', 'btn-${ip}', '${coul}')" style="background-image: url(images/plus.png); width:45px; height:45px; ${displayStyle}"></button>
+                            <button id="btn-${ip}" onclick="add('${card.photo}', 'btn-${ip}', '${coul}')" style="background-image: url(images/plus.png); width:45px; height:45px;"></button>
                             <button onclick="affphoto('${card.photo}')" style="background-image: url(images/oeil.png); width:45px; height:45px; margin-left: 5px;"></button>
                         </td>
                     </tr>`;
@@ -435,10 +431,15 @@
         }
 
         function restoreSavedState() {
+            // Masquer les boutons "plus" pour les cartes déjà en jeu ou en piège
             activeCards.forEach(item => {
+                let btn = document.getElementById(item.btnId);
+                if(btn) btn.style.display = "none";
                 renderCardElement(item.img, item.btnId, "tablejeu", "div-", item.coul);
             });
             activeTraps.forEach(item => {
+                let btn = document.getElementById(item.btnId);
+                if(btn) btn.style.display = "none";
                 renderCardElement(item.img, item.btnId, "tabletrap", "tdiv-", item.coul);
             });
             updateBadges();
