@@ -127,7 +127,6 @@
             font-weight: 600;
         }
 
-        /* Empêche les boutons de passer à la ligne et les garde côte à côte */
         #myTable td:last-child {
             white-space: nowrap;
             text-align: center;
@@ -136,7 +135,6 @@
         .tdlight { background-color: #fff; color: #2d3748; }
         .tddark { background-color: #2d3748; color: #e2e8f0; }
 
-        /* Ajustements du tableau et du texte sur mobile */
         @media (max-width: 768px) {
             #myTable td:first-child {
                 font-size: 0.95rem;
@@ -152,7 +150,6 @@
                 border-spacing: 0 6px;
             }
 
-            /* Boutons plus et œil compacts sur mobile pour garder la ligne bien alignée */
             #myTable button {
                 width: 38px !important;
                 height: 38px !important;
@@ -184,13 +181,6 @@
         }
         .fdivlight { background: var(--header-light); }
         .fdivdark { background: var(--header-dark); }
-
-        .grid-tables {
-            display: grid;
-            gap: 20px;
-            margin-top: 20px;
-            width: 100%;
-        }
 
         #demo {
             position: fixed;
@@ -248,8 +238,8 @@
             color: #a0aec0;
         }
 
-        /* Conteneur principal de la main en mode swipe horizontal (Éventail fixe sans animation hover) */
-        #tablejeu {
+        /* Conteneurs en mode swipe horizontal (Éventail fixe pour Jeu et Pièges) */
+        #tablejeu, #tabletrap {
             display: flex;
             overflow-x: auto;
             scroll-snap-type: x mandatory;
@@ -262,11 +252,11 @@
             -webkit-overflow-scrolling: touch;
         }
 
-        #tablejeu::-webkit-scrollbar {
+        #tablejeu::-webkit-scrollbar, #tabletrap::-webkit-scrollbar {
             display: none;
         }
 
-        #tablejeu > div {
+        #tablejeu > div, #tabletrap > div {
             flex: 0 0 220px;
             scroll-snap-align: center;
             position: relative;
@@ -274,13 +264,13 @@
         }
 
         /* Inclinaison statique en éventail */
-        #tablejeu > div:nth-child(5n-4) { transform: rotate(-12deg) translateY(15px); }
-        #tablejeu > div:nth-child(5n-3) { transform: rotate(-6deg) translateY(5px); }
-        #tablejeu > div:nth-child(5n-2) { transform: rotate(0deg) translateY(0px); }
-        #tablejeu > div:nth-child(5n-1) { transform: rotate(6deg) translateY(5px); }
-        #tablejeu > div:nth-child(5n)   { transform: rotate(12deg) translateY(15px); }
+        #tablejeu > div:nth-child(5n-4), #tabletrap > div:nth-child(5n-4) { transform: rotate(-12deg) translateY(15px); }
+        #tablejeu > div:nth-child(5n-3), #tabletrap > div:nth-child(5n-3) { transform: rotate(-6deg) translateY(5px); }
+        #tablejeu > div:nth-child(5n-2), #tabletrap > div:nth-child(5n-2) { transform: rotate(0deg) translateY(0px); }
+        #tablejeu > div:nth-child(5n-1), #tabletrap > div:nth-child(5n-1) { transform: rotate(6deg) translateY(5px); }
+        #tablejeu > div:nth-child(5n),   #tabletrap > div:nth-child(5n)   { transform: rotate(12deg) translateY(15px); }
 
-        #tablejeu .trash {
+        #tablejeu .trash, #tabletrap .trash {
             position: absolute;
             bottom: -15px;
             left: 20%;
@@ -321,7 +311,11 @@
             <div id="nbcartes" style="display: none;" class="nbcard">0</div>
         </div>
         
-        <button style="background-image: url(images/trap.png);" onclick="afftrap()" title="Voir les pièges"></button>
+        <div class="badge-wrapper">
+            <button style="background-image: url(images/trap.png);" onclick="afftrap()" title="Voir les pièges"></button>
+            <div id="nbpieges" style="display: none;" class="nbcard">0</div>
+        </div>
+
         <button style="background-image: url(images/rules.png);" onclick="affrules()" title="Règles du jeu"></button>
     </div>
 
@@ -335,11 +329,10 @@
     <div id="jeu" class="view-container">
         <div id="fdiv" class="fdiv fdivlight">
             <button class="action-btn" onclick="hidejeu()">Retour</button>
-            <!-- Bouton de filtre RGB pour trier les cartes en main par type -->
             <button style="background-image: url(images/RGB.png);" onclick="RGBGame()" id="myGameBtn" title="Filtrer par type en main"></button>
             <button class="action-btn danger-btn" onclick="clearGame()">Tout effacer</button>
         </div>
-        <div id="tablejeu" class="grid-tables"></div>
+        <div id="tablejeu"></div>
     </div>
 
     <!-- VUE PIÈGES -->
@@ -347,7 +340,7 @@
         <div id="sdiv" class="fdiv fdivlight">
             <button class="action-btn" onclick="hidetrap()">Retour</button>
         </div>
-        <div id="tabletrap" class="grid-tables" style="grid-template-columns: repeat(2, 1fr);"></div>
+        <div id="tabletrap"></div>
     </div>
 
     <!-- MODALE PHOTO EN GRAND -->
@@ -367,7 +360,6 @@
         let activeCards = JSON.parse(localStorage.getItem('muffin_activeCards')) || [];
         let activeTraps = JSON.parse(localStorage.getItem('muffin_activeTraps')) || [];
 
-        // Chargement initial des données JSON
         document.addEventListener("DOMContentLoaded", async function() {
             try {
                 let response = await fetch('cartes.json');
@@ -410,7 +402,7 @@
         function saveState() {
             localStorage.setItem('muffin_activeCards', JSON.stringify(activeCards));
             localStorage.setItem('muffin_activeTraps', JSON.stringify(activeTraps));
-            updateBadge();
+            updateBadges();
         }
 
         function restoreSavedState() {
@@ -420,7 +412,7 @@
             activeTraps.forEach(item => {
                 renderCardElement(item.img, item.btnId, "tabletrap", "tdiv-", item.coul);
             });
-            updateBadge();
+            updateBadges();
         }
 
         function renderCardElement(img, btnId, targetTableId, divPrefix, coul = "Blue") {
@@ -433,7 +425,7 @@
             let content = `<img src="images/${img}.png" width="100%" style="border-radius:8px;"><button class="trash" onclick="${trashAction}">🗑️</button>`;
             
             if (img.includes('trap') && targetTableId === "tablejeu") {
-                content += `<button class="trap-btn" onclick="gotrap('${img}', '${btnId}', this.parentElement, '${coul}')">🪤</button>`;
+                content += `<button class="trap-btn" onclick="gotrap('${img}', '${btnId}', this.parentElement, '${coul}')">⚠️</button>`;
             }
             
             container.innerHTML = content;
@@ -510,6 +502,12 @@
         }
 
         function gotrap(img, btnId, element, coul) {
+            // Limite fixée à 3 pièges actifs max
+            if (activeTraps.length >= 3) {
+                alert("Vous ne pouvez pas avoir plus de 3 pièges actifs en même temps !");
+                return;
+            }
+
             activeCards = activeCards.filter(c => c.btnId !== btnId);
             element.remove();
 
@@ -545,18 +543,27 @@
 
                 document.getElementById("tablejeu").innerHTML = "";
                 document.getElementById("tabletrap").innerHTML = "";
-                updateBadge();
+                updateBadges();
             }
         }
 
-        function updateBadge() {
-            let count = activeCards.length;
-            let badge = document.getElementById('nbcartes');
-            if (count > 0) {
-                badge.style.display = "inline-block";
-                badge.innerText = count;
+        function updateBadges() {
+            let countCards = activeCards.length;
+            let badgeCards = document.getElementById('nbcartes');
+            if (countCards > 0) {
+                badgeCards.style.display = "inline-block";
+                badgeCards.innerText = countCards;
             } else {
-                badge.style.display = "none";
+                badgeCards.style.display = "none";
+            }
+
+            let countTraps = activeTraps.length;
+            let badgeTraps = document.getElementById('nbpieges');
+            if (countTraps > 0) {
+                badgeTraps.style.display = "inline-block";
+                badgeTraps.innerText = countTraps;
+            } else {
+                badgeTraps.style.display = "none";
             }
         }
 
