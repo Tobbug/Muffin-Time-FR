@@ -297,13 +297,6 @@
         <div id="fdiv" class="fdiv fdivlight">
             <button class="action-btn" onclick="hidejeu()">Retour</button>
             <button class="action-btn danger-btn" onclick="clearGame()">Tout effacer</button>
-            <div>
-                <label>Colonnes : </label>
-                <input type="radio" name="cards" value="1" oninput="grid('tablejeu', this.value)"> 1
-                <input type="radio" name="cards" value="2" checked oninput="grid('tablejeu', this.value)"> 2
-                <input type="radio" name="cards" value="3" oninput="grid('tablejeu', this.value)"> 3
-                <input type="radio" name="cards" value="4" oninput="grid('tablejeu', this.value)"> 4
-            </div>
         </div>
         <div id="tablejeu" class="grid-tables" style="grid-template-columns: repeat(2, 1fr);"></div>
     </div>
