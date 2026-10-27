@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>muffin time fr</title>
+    <link rel="icon" type="image/x-icon" href="images/muftime.ico">
+    <script type="text/javascript">
+        var hauteur = window.screen.height, light = 0, tds, colsel = "";
+
+        // Chargement automatique des cartes depuis le fichier JSON au démarrage
+        document.addEventListener("DOMContentLoaded", function() {
+            fetch('cartes.json')
+                .then(response => response.json())
+                .then(data => {
+                    // Tri alphabétique par nom (équivalent de ORDER BY nom)
+                    data.sort((a, b) => a.nom.localeCompare(b.nom));
+                    
+                    let aff = '';
+                    let ip = 0;
+
+                    data.forEach(affichage => {
+                        ip++;
+                        let typecol = "#0000ff70";
+                        let coul = "Blue";
+
+                        if (affichage.type === 'action') {
+                            typecol = "#0000ff70";
+                            coul = "Blue";
+                        } else if (affichage.type === 'counter') {
+                            typecol = "#00800070";
+                            coul = "Green";
+                        } else if (affichage.type === 'trap') {
+                            typecol = "#ff000070";
+                            coul = "Red";
+                        }
+
+                        aff += `<tr>
+                            <td align="center" width="70%" class="tdlight ${coul}" style="background-color:${typecol}">${affichage.nom}</td>
+                            <td width="30%" align="center">
+                                <button id="${ip}" onclick="add(this.name, this.id);" name="${affichage.photo}" style="background-image: url(images/plus.png);"></button>&nbsp;
+                                <button onclick="affphoto(this.name)" name="${affichage.photo}" style="background-image: url(images/oeil.png);"></button>
+                            </td>
+                        </tr>`;
+                    });
+
+                    document.getElementById("myTable").innerHTML = aff;
+                    tds = document.getElementsByTagName("td");
+                })
+                .catch(error => console.error('Erreur lors du chargement des cartes:', error));
+        });
+
+        function theme() {
+            if (light == 0) {
+                light = 1;
+                settheme('dark', 'light');
+            } else {
+                light = 0;
+                settheme('light', 'dark');
+            }
+        }
+
+        function settheme(type, notype) {
+            document.getElementById("body").classList.add("bod" + type);
+            document.getElementById("body").classList.remove("bod" + notype);
+            document.getElementById("jeu").classList.add("jeu" + type);
+            document.getElementById("jeu").classList.remove("jeu" + notype);
+            document.getElementById("fdiv").classList.add("fdiv" + type);
+            document.getElementById("fdiv").classList.remove("fdiv" + notype);
+            document.getElementById("sdiv").classList.add("fdiv" + type);
+            document.getElementById("sdiv").classList.remove("fdiv" + notype);
+            document.getElementById("search").classList.add("search" + type);
+            document.getElementById("search").classList.remove("search" + notype);
+            document.getElementById("myInput").classList.add("myInput" + type);
+            document.getElementById("myInput").classList.remove("myInput" + notype);
+            document.getElementById("mysel").classList.add("mysel" + type);
+            document.getElementById("mysel").classList.remove("mysel" + notype);
+            document.getElementById("trap").classList.add("trap" + type);
+            document.getElementById("trap").classList.remove("trap" + notype);
+            document.getElementById("result").classList.add("result" + type);
+            document.getElementById("result").classList.remove("result" + notype);
+            if (tds) {
+                for (let l = 0; l < tds.length; l++) {
+                    tds[l].classList.add("td" + type);
+                    tds[l].classList.remove("td" + notype);
+                }
+            }
+        }
+
+        function affphoto(sup) {
+            var div = document.getElementById('demo');
+            div.innerHTML = '<img src="images/' + sup + '.png" height="' + hauteur + 'px" border="0">';
+            div.style.display = "inline-flex";
+        }
+
+        function affrules() {
+            var div = document.getElementById('zerules');
+            div.style.display = "inline-block";
+            document.getElementById('myTable').style.display = "none";
+        }
+
+        function affjeu() {
+            document.getElementById('jeu').style.display = "block";
+            document.getElementById('myTable').style.display = "none";
+            document.getElementById('search').style.display = "none";
+        }
+
+        function hidejeu() {
+            document.getElementById('myTable').style.display = "";
+            document.getElementById('jeu').style.display = "none";
+            document.getElementById('search').style.display = "block";
+        }
+
+        function afftrap() {
+            document.getElementById('trap').style.display = "block";
+            document.getElementById('myTable').style.display = "none";
+            document.getElementById('search').style.display = "none";
+        }
+
+        function hidetrap() {
+            document.getElementById('myTable').style.display = "";
+            document.getElementById('trap').style.display = "none";
+            document.getElementById('search').style.display = "block";
+        }
+
+        function add(img, p) {
+            document.getElementById(p).style.display = "none";
+            const carddiv = document.createElement("div");
+            carddiv.style.position = 'relative';
+            carddiv.innerHTML = '<img src="images/' + img + '.png" width="100%" border="0"><button class="trash" onclick="deleteimg(' + p + ')"></button>';
+            if (img.includes('trap')) {
+                carddiv.innerHTML += '<button class="trap" onclick="gotrap(`' + img + '`,' + p + ')"></button>';
+            }
+            carddiv.id = "div" + p;
+            document.getElementById("tablejeu").appendChild(carddiv);
+            if (document.getElementById("tablejeu").getElementsByTagName('div').length != 0) {
+                document.getElementById('nbcartes').style.display = "";
+                document.getElementById("nbcartes").innerHTML = document.getElementById("tablejeu").getElementsByTagName("div").length;
+            } else {
+                document.getElementById('nbcartes').style.display = "none";
+            }
+        }
+
+        function gotrap(img, p) {
+            const trapdiv = document.createElement("div");
+            trapdiv.style.position = 'relative';
+            trapdiv.innerHTML = '<img src="images/' + img + '.png" width="100%" border="0"><button class="trash" onclick="deletetrap(' + p + ')"></button>';
+            trapdiv.id = "tdiv" + p;
+            document.getElementById("tabletrap").appendChild(trapdiv);
+            document.getElementById("div" + p).remove();
+            if (document.getElementById("tablejeu").getElementsByTagName('div').length != 0) {
+                document.getElementById('nbcartes').style.display = "";
+                document.getElementById("nbcartes").innerHTML = document.getElementById("tablejeu").getElementsByTagName("div").length;
+            } else {
+                document.getElementById('nbcartes').style.display = "none";
+            }
+        }
+
+        function deleteimg(p) {
+            document.getElementById(p).style.display = "";
+            document.getElementById("div" + p).remove();
+            if (document.getElementById("tablejeu").getElementsByTagName('div').length != 0) {
+                document.getElementById('nbcartes').style.display = "";
+                document.getElementById("nbcartes").innerHTML = document.getElementById("tablejeu").getElementsByTagName("div").length;
+            } else {
+                document.getElementById('nbcartes').style.display = "none";
+            }
+        }
+        function deletetrap(p) {
+            document.getElementById(p).style.display = "";
+            document.getElementById("tdiv" + p).remove();
+        }
+
+        function search() {
+            var input, filter, table, tr, td, i, txtValue, hey;
+            input = document.getElementById("myInput");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("myTable");
+            tr = table.getElementsByTagName("tr");
+            hey = 0;
+
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[0];
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        if (td.className.includes(colsel)) {
+                            tr[i].style.display = "";
+                            hey++;
+                        }
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+            if (hey == 0) {
+                document.getElementById('result').style.display = "";
+            } else {
+                document.getElementById('result').style.display = "none";
+            }
+            if (input.value.toUpperCase() == "RAINBOW") {
+                rainbowtxt();
+            }
+        }
+
+        function RGB() {
+            if (colsel == "") {
+                colsel = "Red";
+                gocol(colsel);
+                document.getElementById('myInput').style.backgroundColor = "#ff000070";
+            } else if (colsel == "Red") {
+                colsel = "Green";
+                gocol(colsel);
+                document.getElementById('myInput').style.backgroundColor = "#00800070";
+            } else if (colsel == "Green") {
+                colsel = "Blue";
+                gocol(colsel);
+                document.getElementById('myInput').style.backgroundColor = "#0000ff70";
+            } else if (colsel == "Blue") {
+                colsel = "";
+                var table, tr;
+                table = document.getElementById("myTable");
+                tr = table.getElementsByTagName("tr");
+                for (let az = 0; az < tr.length; az++) {
+                    tr[az].style.display = "";
+                }
+                document.getElementById('myInput').style.backgroundColor = "";
+            }
+            search();
+        }
+
+        function gocol(arg) {
+            var table, tr;
+            table = document.getElementById("myTable");
+            tr = table.getElementsByTagName("tr");
+            for (let z = 0; z < tr.length; z++) {
+                td = tr[z].getElementsByTagName("td")[0];
+                if (td) {
+                    let tdcol = td.className;
+                    if (tdcol.includes(arg)) {
+                        tr[z].style.display = "";
+                    } else {
+                        tr[z].style.display = "none";
+                    }
+                }
+            }
+        }
+
+        function grid(a) {
+            document.getElementById("tablejeu").style.gridTemplateColumns = "repeat(" + a + "," + a + "fr)";
+            document.getElementById("tabletrap").style.gridTemplateColumns = "repeat(" + a + "," + a + "fr)";
+        }
+
+        function rainbowtxt() {
+            document.getElementById('myTable').classList.toggle('rainbow_text_animated');
+            setTimeout(function () {
+                document.getElementById('myTable').classList.toggle('rainbow_text_animated');
+            }, 20000);
+        }
+    </script>
+    <style>
+        .tdlight { color: black; }
+        .tddark { color: #fefefe70; }
+        .boddark { background-color: #2b2a33; font-size: 40pt; }
+        .bodlight { font-size: 40pt; }
+        .jeudark { background-color: #2b2a33; color: gray; z-index: 6; text-align: center; margin: auto; }
+        .jeulight { z-index: 6; text-align: center; background-color: #ffffff; margin: auto; }
+        .trapdark { background-color: #2b2a33; color: gray; z-index: 6; text-align: center; margin: auto; }
+        .traplight { z-index: 6; text-align: center; background-color: #ffffff; margin: auto; }
+        .fdivdark { position: sticky; top: 0%; display: block; background-color: #2b2a33; text-align: center; z-index: 6; }
+        .fdivlight { position: sticky; position: -webkit-sticky; top: 0%; display: block; background-color: white; text-align: center; z-index: 6; }
+        #demo { position: fixed; justify-content: center; display: none; align-items: center; z-index: 5; text-align: center; background-color: #fefefe90; top: 0; bottom: 0; left: 0; right: 0; margin: auto; }
+        .searchlight { position: sticky; position: -webkit-sticky; top: 0%; display: block; background-color: white; text-align: center; }
+        .searchdark { position: sticky; position: -webkit-sticky; top: 0%; display: block; background-color: #2b2a33; text-align: center; }
+        .myInputlight { color: black; width: 500px; height: 80px; vertical-align: middle; }
+        .myInputdark { color: #fefefe70; width: 500px; height: 80px; vertical-align: middle; background-color: #2b2a33; border: 2px solid gray; }
+        button { background-repeat: no-repeat; background-position: center; padding: 50px; border-radius: 30%; background-color: #fefefe70; border: 2px solid gray; vertical-align: middle; background-size: contain; }
+        img { border-radius: 5%; }
+        .trash { background-image: url(images/trash.png); position: absolute; bottom: 0%; left: 20%; transform: translate(-50%, -50%); -ms-transform: translate(-50%, -50%); background-color: #ff000090; padding: 10%; background-size: contain; border-radius: 20%; }
+        .trap { background-image: url(images/trap.png); position: absolute; bottom: 0%; left: 20%; transform: translate(70%, -50%); -ms-transform: translate(70%, -50%); background-color: #7b7b7b90; padding: 10%; background-size: contain; border-radius: 20%; }
+        .nbcard { background-color: red; position: absolute; top: -10%; right: -5%; padding: 6%; border-radius: 25px; font-size: 20px; font-weight: bold; }
+        #tablejeu { width: 100%; display: grid; }
+        #tabletrap { width: 100%; display: grid; }
+        .mysellight { font-size: 35pt; vertical-align: middle; }
+        .myseldark { font-size: 35pt; vertical-align: middle; background-color: #2b2a33; color: #fefefe70; }
+        .resultlight { text-align: center; }
+        .resultdark { text-align: center; color: #fefefe70; }
+        .rainbow_text_animated { background: linear-gradient(to right, #6666ff, #0099ff, #00ff00, #ff3399, #6666ff); -webkit-background-clip: text; background-clip: text; color: transparent; animation: rainbow_animation 6s ease-in-out infinite; background-size: 400% 100%; }
+        @keyframes rainbow_animation { 0%, 100% { background-position: 0 0; } 50% { background-position: 100% 0; } }
+    </style>
+</head>
+
+<body id="body" class="bodlight">
+    <div id="jeu" class="jeulight" style="display: none;">
+        <div id="fdiv" class="fdivlight">
+            <button style="font-size:35pt; padding:5px; border-radius: 20px;" onclick="hidejeu()">retour</button>
+            <br>
+            <div class="slidecontainer" style="display: inline-block; vertical-align: middle; position: relative; width: 100%; font-size: 30pt;">
+                <input type="radio" oninput="grid(this.value)" style="height:25px; width:25px" id="cards1" name="cards" value="1">
+                <label for="cards1">1</label>
+                <input type="radio" oninput="grid(this.value)" style="height:25px; width:25px" id="cards2" name="cards" value="2">
+                <label for="cards2">2</label>
+                <input type="radio" oninput="grid(this.value)" style="height:25px; width:25px" id="cards3" name="cards" value="3">
+                <label for="cards3">3</label>
+                <input type="radio" oninput="grid(this.value)" style="height:25px; width:25px" id="cards4" name="cards" value="4">
+                <label for="cards4">4</label>
+                <input type="radio" oninput="grid(this.value)" style="height:25px; width:25px" id="cards5" name="cards" value="5">
+                <label for="cards5">5</label>
+            </div>
+            <hr>
+        </div>
+        <div id="tablejeu" style="grid-template-columns: 50% 50%;" align="center"></div>
+    </div>
+    <div id="trap" class="traplight" style="display: none;">
+        <div id="sdiv" class="fdivlight">
+            <button style="font-size:35pt; padding:5px; border-radius: 20px;" onclick="hidetrap()">retour</button>
+        </div>
+        <div id="tabletrap" style="grid-template-columns: 50% 50%;" align="center"></div>
+    </div>
+    <div id="demo" onclick="this.style.display='none'">HOW DID I GET THERE ?</div>
+    <div id="zerules" onclick="this.style.display='none'; document.getElementById('myTable').style.display = '';" style="position:absolute; display:none; z-index:5; text-align:center; top:0; bottom:0; left:0; right:0; margin: auto;">
+        <img width="100%" src="images/rules1.png" border="0"><br><img width="100%" src="images/rules2.png" border="0"><img width="100%" src="images/rules3.png" border="0"><br><img width="100%" src="images/rules4.png" border="0">
+    </div>
+    <div id="search" class="searchlight">
+        <button style="background-image: url(images/theme.png);" onclick="theme()"></button>
+        <input type="text" style="font-size:40pt;" id="myInput" class="myInputlight" onkeyup="search()" placeholder="Recherche">
+        <button style="background-image: url(images/RGB.png);" onclick="RGB()" id="myBtn"></button>
+        <br>
+        <div style="position: relative; display: inline-block;">
+            <button style="background-image: url(images/cartes.png);" onclick="affjeu()"></button>
+            <div id="nbcartes" style="display: none;" class="nbcard"></div>
+        </div>
+        &nbsp;
+        <button style="background-image: url(images/trap.png);" onclick="afftrap()"></button>
+        &nbsp;
+        <button style="background-image: url(images/rules.png);" onclick="affrules()"></button>
+    </div>
+    <br>
+    <table id="myTable" width="100%" border="1" style="font-size:40pt;">
+        <!-- Les cartes seront injectées dynamiquement ici -->
+    </table>
+    <p id="result" class="resultlight" style="display: none;">Aucun résultat</p>
+</body>
+
+</html>
