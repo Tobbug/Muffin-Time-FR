@@ -546,10 +546,10 @@
         }
 
         function RGB() {
-            if (colsel === "") { colsel = "Red"; }
-            else if (colsel === "Red") { colsel = "Green"; }
-            else if (colsel === "Green") { colsel = "Blue"; }
-            else { colsel = ""; }
+            if (colsel === "") { colsel = "Red"; document.getElementById('myBtn').style.backgroundImage = 'url(images/R.png)';}
+            else if (colsel === "Red") { colsel = "Green"; document.getElementById('myBtn').style.backgroundImage = 'url(images/G.png)';}
+            else if (colsel === "Green") { colsel = "Blue"; document.getElementById('myBtn').style.backgroundImage = 'url(images/B.png)';}
+            else { colsel = ""; document.getElementById('myBtn').style.backgroundImage = 'url(images/RGB.png)';}
             search();
         }
 
