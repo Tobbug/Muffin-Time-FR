@@ -162,14 +162,20 @@
 
         .view-container {
             display: none;
-            padding: 20px;
-            min-height: 100vh;
+            padding: 0 20px;
+            height: calc(100vh - 80px);
+            box-sizing: border-box;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
 
         .fdiv {
-            position: sticky;
-            top: 0;
-            padding: 15px;
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
             z-index: 10;
             text-align: center;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -178,6 +184,7 @@
             align-items: center;
             gap: 20px;
             flex-wrap: wrap;
+            border-radius: 12px;
         }
         .fdivlight { background: var(--header-light); }
         .fdivdark { background: var(--header-dark); }
@@ -238,69 +245,47 @@
             color: #a0aec0;
         }
 
-        /* Conteneur principal de la main en mode swipe horizontal (Éventail) */
-        #tablejeu {
+        /* Conteneurs en mode swipe horizontal (Éventail compact et centré verticalement) */
+        #tablejeu, #tabletrap {
             display: flex;
             overflow-x: auto;
             scroll-snap-type: x mandatory;
             gap: 0px;
-            padding: 60px 20px;
+            padding: 40px 20px;
             width: 100%;
+            max-width: 1000px;
             box-sizing: border-box;
-            align-items: flex-end;
+            align-items: center;
             justify-content: flex-start;
             -webkit-overflow-scrolling: touch;
         }
 
-        #tablejeu::-webkit-scrollbar {
+        #tablejeu::-webkit-scrollbar, #tabletrap::-webkit-scrollbar {
             display: none;
         }
 
-        #tablejeu > div {
-            flex: 0 0 220px;
+        /* Cartes plus compactes pour en voir plus d'un coup */
+        #tablejeu > div, #tabletrap > div {
+            flex: 0 0 160px;
             scroll-snap-align: center;
             position: relative;
             transition: transform 0.3s ease, z-index 0.3s ease;
             transform-origin: bottom center;
         }
 
-        /* Inclinaison statique en éventail pour le jeu */
-        #tablejeu > div:nth-child(5n-4) { transform: rotate(-10deg) translateY(15px); }
-        #tablejeu > div:nth-child(5n-3) { transform: rotate(-6deg) translateY(5px); }
-        #tablejeu > div:nth-child(5n-2) { transform: rotate(0deg) translateY(0px); }
-        #tablejeu > div:nth-child(5n-1) { transform: rotate(6deg) translateY(5px); }
-        #tablejeu > div:nth-child(5n)   { transform: rotate(10deg) translateY(15px); }
-
-        /* Animation au survol (PC) ou actif (Mobile) pour passer au premier plan */
-        #tablejeu > div:hover, 
-        #tablejeu > div.card-active {
-            transform: rotate(0deg) !important;
+        /* Effet au survol (PC) ou actif (Mobile) pour passer au premier plan */
+        #tablejeu > div:hover, #tabletrap > div:hover,
+        #tablejeu > div.card-active, #tabletrap > div.card-active {
+            transform: translateY(-30px) scale(1.15) rotate(0deg) !important;
             z-index: 100 !important;
-        }
-
-        /* Conteneur pour les pièges actifs (centré) */
-        #tabletrap {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-            padding: 40px 20px;
-            width: 100%;
-            box-sizing: border-box;
-            flex-wrap: wrap;
-        }
-
-        #tabletrap > div {
-            flex: 0 0 220px;
-            position: relative;
         }
 
         #tablejeu .trash, #tabletrap .trash {
             position: absolute;
-            bottom: -15px;
+            bottom: -12px;
             left: 20%;
-            width: 40px;
-            height: 40px;
+            width: 35px;
+            height: 35px;
             background-color: rgba(255, 0, 0, 0.9);
             border-radius: 50%;
             border: none;
@@ -310,10 +295,10 @@
 
         #tablejeu .trap-btn {
             position: absolute;
-            bottom: -15px;
+            bottom: -12px;
             right: 20%;
-            width: 40px;
-            height: 40px;
+            width: 35px;
+            height: 35px;
             background-color: rgba(123, 123, 123, 0.9);
             border-radius: 50%;
             border: none;
@@ -364,6 +349,7 @@
     <div id="trap" class="view-container">
         <div id="sdiv" class="fdiv fdivlight">
             <button class="action-btn" onclick="hidetrap()">Retour</button>
+            <button style="background-image: url(images/RGB.png);" onclick="RGBTrap()" id="myTrapBtn" title="Filtrer par type de piège"></button>
         </div>
         <div id="tabletrap"></div>
     </div>
@@ -381,7 +367,7 @@
     </div>
 
     <script>
-        let light = 0, colsel = "", gameColsel = "";
+        let light = 0, colsel = "", gameColsel = "", trapColsel = "";
         let activeCards = JSON.parse(localStorage.getItem('muffin_activeCards')) || [];
         let activeTraps = JSON.parse(localStorage.getItem('muffin_activeTraps')) || [];
 
@@ -424,22 +410,18 @@
             }
         });
 
-        // Gestion du clic sur mobile pour basculer l'état "actif" (premier plan) d'une carte en main
+        // Gestion du clic sur mobile pour basculer l'état "actif" (premier plan) d'une carte
         document.addEventListener('click', function(event) {
-            let tablejeu = document.getElementById('tablejeu');
-            let cardDiv = event.target.closest('#tablejeu > div');
+            let cardDiv = event.target.closest('#tablejeu > div, #tabletrap > div');
             
-            // Si on clique sur une carte de la main
             if (cardDiv) {
-                // Retire la classe active des autres cartes
-                Array.from(tablejeu.children).forEach(child => {
+                let parentContainer = cardDiv.parentElement;
+                Array.from(parentContainer.children).forEach(child => {
                     if (child !== cardDiv) child.classList.remove('card-active');
                 });
-                // Bascule l'état sur la carte cliquée
                 cardDiv.classList.toggle('card-active');
             } else {
-                // Si on clique en dehors, on remet toutes les cartes à plat
-                Array.from(tablejeu.children).forEach(child => {
+                document.querySelectorAll('#tablejeu > div, #tabletrap > div').forEach(child => {
                     child.classList.remove('card-active');
                 });
             }
@@ -476,7 +458,28 @@
             
             container.innerHTML = content;
             document.getElementById(targetTableId).appendChild(container);
-            filterGameCards();
+            updateFanRotations(targetTableId);
+            if (targetTableId === "tablejeu") filterGameCards();
+            if (targetTableId === "tabletrap") filterTrapCards();
+        }
+
+        // Calcule dynamiquement l'orientation en éventail selon le nombre de cartes dans le conteneur
+        function updateFanRotations(tableId) {
+            let container = document.getElementById(tableId);
+            let cards = container.children;
+            let total = cards.length;
+            
+            Array.from(cards).forEach((card, index) => {
+                if (total <= 1) {
+                    card.style.transform = "rotate(0deg) translateY(0px)";
+                } else {
+                    // Répartition symétrique de l'angle (de -15° à +15° par exemple selon le nombre)
+                    let angleStep = Math.min(25 / (total - 1), 6);
+                    let angle = (index - (total - 1) / 2) * angleStep;
+                    let translateY = Math.abs(index - (total - 1) / 2) * 3;
+                    card.style.transform = `rotate(${angle}deg) translateY(${translateY}px)`;
+                }
+            });
         }
 
         function theme() {
@@ -506,7 +509,12 @@
         }
 
         function affjeu() {
-            document.getElementById('jeu').style.display = "block";
+            // Reset du filtre de jeu à l'ouverture
+            gameColsel = "";
+            document.getElementById('myGameBtn').style.backgroundImage = 'url(images/RGB.png)';
+            filterGameCards();
+
+            document.getElementById('jeu').style.display = "flex";
             document.getElementById('myTable').style.display = "none";
             document.getElementById('search').style.display = "none";
         }
@@ -518,7 +526,12 @@
         }
 
         function afftrap() {
-            document.getElementById('trap').style.display = "block";
+            // Reset du filtre de pièges à l'ouverture
+            trapColsel = "";
+            document.getElementById('myTrapBtn').style.backgroundImage = 'url(images/RGB.png)';
+            filterTrapCards();
+
+            document.getElementById('trap').style.display = "flex";
             document.getElementById('myTable').style.display = "none";
             document.getElementById('search').style.display = "none";
         }
@@ -543,8 +556,9 @@
             if(btn) btn.style.display = "inline-block";
 
             activeCards = activeCards.filter(c => c.btnId !== btnId);
-            saveState();
             element.remove();
+            saveState();
+            updateFanRotations("tablejeu");
         }
 
         function gotrap(img, btnId, element, coul) {
@@ -555,6 +569,7 @@
 
             activeCards = activeCards.filter(c => c.btnId !== btnId);
             element.remove();
+            updateFanRotations("tablejeu");
 
             activeTraps.push({ img, btnId, coul });
             saveState();
@@ -566,8 +581,9 @@
             if(btn) btn.style.display = "inline-block";
 
             activeTraps = activeTraps.filter(t => t.btnId !== btnId);
-            saveState();
             element.remove();
+            saveState();
+            updateFanRotations("tabletrap");
         }
 
         function clearGame() {
@@ -656,6 +672,26 @@
             for (let card of cards) {
                 let cardType = card.getAttribute("data-type");
                 if (gameColsel === "" || cardType === gameColsel) {
+                    card.style.display = "block";
+                } else {
+                    card.style.display = "none";
+                }
+            }
+        }
+
+        function RGBTrap() {
+            if (trapColsel === "") { trapColsel = "Red"; document.getElementById('myTrapBtn').style.backgroundImage = 'url(images/R.png)'; }
+            else if (trapColsel === "Red") { trapColsel = "Green"; document.getElementById('myTrapBtn').style.backgroundImage = 'url(images/G.png)'; }
+            else if (trapColsel === "Green") { trapColsel = "Blue"; document.getElementById('myTrapBtn').style.backgroundImage = 'url(images/B.png)'; }
+            else { trapColsel = ""; document.getElementById('myTrapBtn').style.backgroundImage = 'url(images/RGB.png)'; }
+            filterTrapCards();
+        }
+
+        function filterTrapCards() {
+            let cards = document.getElementById("tabletrap").children;
+            for (let card of cards) {
+                let cardType = card.getAttribute("data-type");
+                if (trapColsel === "" || cardType === trapColsel) {
                     card.style.display = "block";
                 } else {
                     card.style.display = "none";
