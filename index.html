@@ -183,7 +183,6 @@
             justify-content: center;
             align-items: center;
             gap: 20px;
-            flex-wrap: wrap;
             border-radius: 12px;
         }
         .fdivlight { background: var(--header-light); }
@@ -435,10 +434,15 @@
         }
 
         function restoreSavedState() {
+            // S'assurer que les boutons des cartes déjà actives ou en pièges sont bien masqués en permanence
             activeCards.forEach(item => {
+                let btn = document.getElementById(item.btnId);
+                if (btn) btn.style.display = "none";
                 renderCardElement(item.img, item.btnId, "tablejeu", "div-", item.coul);
             });
             activeTraps.forEach(item => {
+                let btn = document.getElementById(item.btnId);
+                if (btn) btn.style.display = "none";
                 renderCardElement(item.img, item.btnId, "tabletrap", "tdiv-", item.coul);
             });
             updateBadges();
