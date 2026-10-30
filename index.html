@@ -7,45 +7,94 @@
     <link rel="icon" type="image/x-icon" href="images/muftime.ico">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* ========================================================================== */
-        /* VARIABLES & CONFIGURATION GLOBALE DU DESIGN (Thèmes clair/sombre)          */
-        /* ========================================================================== */
+        /* ====================================================================== */
+        /* 1. VARIABLES ET THÈMES                                                 */
+        /*    Le thème sombre ne fait que redéfinir ces variables (body.dark).    */
+        /* ====================================================================== */
         :root {
-            --bg-light: #f4f6f9;
-            --text-light: #2d3748;
-            --card-bg-light: #ffffff;
-            --header-light: #ffffff;
-            
-            --bg-dark: #1a202c;
-            --text-dark: #e2e8f0;
-            --card-bg-dark: #2d3748;
-            --header-dark: #2d3748;
-
-            --primary: #667eea;
+            --bg: #f4f6f9;
+            --text: #2d3748;
+            --surface: #ffffff;        /* barres, cellules, boîtes */
+            --input-bg: #ffffff;
+            --input-text: #000000;
+            --input-border: #cbd5e0;
             --transition: all 0.3s ease;
         }
 
+        body.dark {
+            --bg: #1a202c;
+            --text: #e2e8f0;
+            --surface: #2d3748;
+            --input-bg: #4a5568;
+            --input-text: #ffffff;
+            --input-border: #718096;
+        }
+
+        /* Un élément masqué par l'attribut `hidden` le reste TOUJOURS,
+           même si une autre règle CSS lui donne un display. */
+        [hidden] { display: none !important; }
+
+        /* ====================================================================== */
+        /* 2. BASE                                                                */
+        /* ====================================================================== */
         body {
             font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
             font-size: 18px;
+            background-color: var(--bg);
+            color: var(--text);
             transition: var(--transition);
         }
 
-        body.bodlight {
-            background-color: var(--bg-light);
-            color: var(--text-light);
+        /* Boutons ronds avec icône (thème, filtre, main, pièges, règles, +, œil) */
+        .icon-btn {
+            cursor: pointer;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            background-color: rgba(255, 255, 255, 0.8);
+            background-size: 50%;
+            background-repeat: no-repeat;
+            background-position: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+        }
+        .icon-btn:hover { transform: scale(1.05); }
+
+        /* Icônes : une classe par bouton, plus aucun style inline */
+        .btn-theme  { background-image: url(images/theme.png); }
+        .btn-cards  { background-image: url(images/cartes.png); }
+        .btn-trap   { background-image: url(images/trap.png); }
+        .btn-rules  { background-image: url(images/rules.png); }
+        .btn-plus   { background-image: url(images/plus.png); }
+        .btn-eye    { background-image: url(images/oeil.png); }
+        .btn-filter                    { background-image: url(images/RGB.png); }
+        .btn-filter[data-filter="Red"]   { background-image: url(images/R.png); }
+        .btn-filter[data-filter="Green"] { background-image: url(images/G.png); }
+        .btn-filter[data-filter="Blue"]  { background-image: url(images/B.png); }
+
+        /* Boutons rectangulaires avec texte (Retour, Vider) */
+        .action-btn {
+            cursor: pointer;
+            border: none;
+            height: 50px;
+            padding: 0 20px;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 1rem;
+            background-color: #e2e8f0;
+            transition: var(--transition);
+        }
+        .danger-btn {
+            background-color: #fed7d7;
+            color: #c53030;
         }
 
-        body.boddark {
-            background-color: var(--bg-dark);
-            color: var(--text-dark);
-        }
-
-        /* ========================================================================== */
-        /* BARRE DE NAVIGATION ET RECHERCHE (Sticky en haut de l'écran)               */
-        /* ========================================================================== */
+        /* ====================================================================== */
+        /* 3. BARRE DE RECHERCHE (fixe en haut de la liste)                       */
+        /* ====================================================================== */
         .search-bar {
             position: sticky;
             top: 0;
@@ -56,67 +105,45 @@
             align-items: center;
             gap: 10px;
             flex-wrap: wrap;
+            background-color: var(--surface);
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             transition: var(--transition);
         }
 
-        .searchlight { background-color: var(--header-light); }
-        .searchdark { background-color: var(--header-dark); }
-
-        input[type="text"] {
+        .search-input {
             padding: 10px 15px;
+            font-family: inherit;
             font-size: 1.1rem;
             border-radius: 30px;
-            border: 2px solid #cbd5e0;
+            border: 2px solid var(--input-border);
             outline: none;
             width: 400px;
             max-width: 100%;
+            background: var(--input-bg);
+            color: var(--input-text);
             transition: var(--transition);
         }
 
-        .myInputlight { background: #fff; color: #000; }
-        .myInputdark { background: #4a5568; color: #fff; border-color: #718096; }
-
-        /* Style général de tous les boutons de l'interface */
-        button {
-            cursor: pointer;
-            border: none;
+        /* Pastille de compteur sur les boutons "main" et "pièges" */
+        .badge-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+        .nbcard {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            padding: 2px 8px;
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            background-size: 50%;
-            background-repeat: no-repeat;
-            background-position: center;
-            background-color: rgba(255, 255, 255, 0.8);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            transition: var(--transition);
+            background-color: #e53e3e;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
         }
 
-        button:hover {
-            transform: scale(1.05);
-        }
-
-        /* Ajustements responsive pour les petits écrans (smartphones) */
-        @media (max-width: 768px) {
-            .search-bar {
-                gap: 8px;
-                padding: 8px;
-            }
-            
-            input[type="text"] {
-                width: 100%;
-                order: -1;
-            }
-
-            button {
-                width: 45px;
-                height: 45px;
-            }
-        }
-
-        /* ========================================================================== */
-        /* TABLEAU PRINCIPAL DE LISTING DES CARTES                                    */
-        /* ========================================================================== */
+        /* ====================================================================== */
+        /* 4. LISTE DES CARTES                                                    */
+        /* ====================================================================== */
         #myTable {
             width: 90%;
             max-width: 1200px;
@@ -125,132 +152,34 @@
             border-spacing: 0 10px;
         }
 
-        #myTable tr {
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            border-radius: 8px;
-            overflow: hidden;
-        }
+        #myTable tr { box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); }
+
+        /* Teinte de la cellule "nom" selon le type de carte */
+        #myTable tr[data-type="Blue"]  { --tint: rgba(0, 0, 255, 0.15); }
+        #myTable tr[data-type="Green"] { --tint: rgba(0, 128, 0, 0.15); }
+        #myTable tr[data-type="Red"]   { --tint: rgba(255, 0, 0, 0.15); }
 
         #myTable td {
             padding: 15px;
             font-weight: 600;
+            text-align: center;
         }
-
-        #myTable td:last-child {
+        .card-name {
+            width: 70%;
+            background-color: var(--tint);
+            border-radius: 8px 0 0 8px;
+        }
+        .card-actions {
+            width: 30%;
             white-space: nowrap;
-            text-align: center;
+            background-color: var(--surface);
+            border-radius: 0 8px 8px 0;
         }
-
-        .tdlight { background-color: #fff; color: #2d3748; }
-        .tddark { background-color: #2d3748; color: #e2e8f0; }
-
-        @media (max-width: 768px) {
-            #myTable td:first-child {
-                font-size: 0.95rem;
-                padding: 10px 8px;
-            }
-
-            #myTable td {
-                padding: 8px 5px;
-            }
-
-            #myTable {
-                width: 95%;
-                border-spacing: 0 6px;
-            }
-
-            #myTable button {
-                width: 38px !important;
-                height: 38px !important;
-                padding: 0 !important;
-                margin: 0 2px !important;
-                display: inline-block !important;
-                vertical-align: middle;
-            }
+        #myTable .icon-btn {
+            width: 45px;
+            height: 45px;
         }
-
-        /* ========================================================================== */
-        /* VUES SECONDAIRES (Jeu en main & Pièges actifs)                             */
-        /* ========================================================================== */
-        .view-container {
-            display: none;
-            padding: 0 20px;
-            height: calc(100vh - 80px);
-            box-sizing: border-box;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* Barre d'outils flottante dans les vues secondaires */
-        .fdiv {
-            position: absolute;
-            top: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 10px 20px;
-            z-index: 10;
-            text-align: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-            border-radius: 12px;
-        }
-        .fdivlight { background: var(--header-light); }
-        .fdivdark { background: var(--header-dark); }
-
-        /* Modale d'affichage d'une carte en grand format (Zoom) */
-        #affcard {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-            cursor: pointer;
-        }
-
-        #affcard img {
-            max-height: 85vh;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-        }
-
-        /* Gestion des badges de compteurs sur les boutons de navigation */
-        .badge-wrapper {
-            position: relative;
-            display: inline-block;
-        }
-
-        .nbcard {
-            background-color: #e53e3e;
-            color: white;
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            padding: 2px 8px;
-            border-radius: 50%;
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        .action-btn {
-            font-size: 1rem; 
-            width: auto; 
-            padding: 10px 20px; 
-            border-radius: 10px;
-            background-color: #e2e8f0;
-            border: none;
-            cursor: pointer;
-        }
-
-        .danger-btn {
-            background-color: #fed7d7;
-            color: #c53030;
-        }
+        #myTable .btn-eye { margin-left: 5px; }
 
         .result-msg {
             text-align: center;
@@ -259,492 +188,595 @@
             color: #a0aec0;
         }
 
-        /* ========================================================================== */
-        /* EFFET ÉVENTAIL DES CARTES EN MAIN (Swipe horizontal)                       */
-        /* ========================================================================== */
-        #tablejeu, #tabletrap {
+        /* ====================================================================== */
+        /* 5. VUES "CARTES EN MAIN" ET "PIÈGES ACTIFS"                            */
+        /* ====================================================================== */
+        .view-container {
             display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0 20px;
+            height: calc(100vh - 80px);
+            height: calc(100dvh - 80px);
+            box-sizing: border-box;
+        }
+
+        /* Barre d'outils flottante en haut de ces vues */
+        .toolbar {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            padding: 10px 20px;
+            border-radius: 12px;
+            background: var(--surface);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Éventail de cartes (défilement horizontal) */
+        .fan {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
             overflow-x: auto;
             scroll-snap-type: x mandatory;
-            gap: 0px;
+            -webkit-overflow-scrolling: touch;
             padding: 40px 30px;
             width: 100%;
             max-width: 1000px;
             box-sizing: border-box;
-            align-items: center;
-            justify-content: flex-start;
-            -webkit-overflow-scrolling: touch;
         }
+        .fan::-webkit-scrollbar { display: none; }
 
-        #tablejeu::-webkit-scrollbar, #tabletrap::-webkit-scrollbar {
-            display: none;
-        }
-
-        #tablejeu > div, #tabletrap > div {
+        .fan-card {
             flex: 0 0 160px;
-            scroll-snap-align: center;
             position: relative;
-            transition: transform 0.3s ease, z-index 0.3s ease;
-            transform-origin: bottom center;
             margin-left: -50px;
+            scroll-snap-align: center;
+            transform-origin: bottom center;
+            transition: transform 0.3s ease, z-index 0.3s ease;
+        }
+        .fan-card:first-child { margin-left: 20px; }
+        .fan-card img {
+            display: block;
+            width: 100%;
+            border-radius: 8px;
         }
 
-        #tablejeu > div:first-child, #tabletrap > div:first-child {
-            margin-left: 20px;
-        }
-
-        #tablejeu > div:hover, #tabletrap > div:hover,
-        #tablejeu > div.card-active, #tabletrap > div.card-active {
+        /* Carte survolée ou touchée : elle se redresse et passe devant */
+        .fan-card:hover,
+        .fan-card.card-active {
             transform: rotate(0deg) !important;
             z-index: 100 !important;
         }
 
-        /* Bouton de suppression (Corbeille) sur les cartes en main/pièges */
-        #tablejeu .trash, #tabletrap .trash {
+        /* Boutons ronds posés sur une carte (corbeille et "poser en piège") */
+        .card-btn {
             position: absolute;
             bottom: -12px;
-            left: 20%;
             width: 35px;
             height: 35px;
-            background-color: rgba(255, 0, 0, 0.9);
-            border-radius: 50%;
             border: none;
+            border-radius: 50%;
             cursor: pointer;
             z-index: 10;
         }
+        .trash    { left: 20%;  background-color: rgba(255, 0, 0, 0.9); }
+        .trap-btn { right: 20%; background-color: rgba(123, 123, 123, 0.9); }
 
-        /* Bouton spécifique pour basculer une carte action en piège */
-        #tablejeu .trap-btn {
-            position: absolute;
-            bottom: -12px;
-            right: 20%;
-            width: 35px;
-            height: 35px;
-            background-color: rgba(123, 123, 123, 0.9);
-            border-radius: 50%;
-            border: none;
+        /* ====================================================================== */
+        /* 6. SUPERPOSITIONS (zoom sur une carte, règles)                         */
+        /* ====================================================================== */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.8);
             cursor: pointer;
-            z-index: 10;
+        }
+
+        #affcard {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #affcard img {
+            max-height: 85vh;
+            max-width: 95vw;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        #zerules {
+            padding: 20px;
+            overflow-y: auto;
+            text-align: center;
+        }
+        #zerules img {
+            display: block;
+            width: 80%;
+            margin: 0 auto 10px;
+        }
+
+        /* ====================================================================== */
+        /* 7. ÉCRANS ÉTROITS (téléphones)                                         */
+        /* ====================================================================== */
+        @media (max-width: 768px) {
+            .search-bar { gap: 8px; padding: 8px; }
+            .search-input { width: 100%; order: -1; }
+            .icon-btn { width: 45px; height: 45px; }
+
+            #myTable { width: 95%; border-spacing: 0 6px; }
+            #myTable td { padding: 8px 5px; }
+            #myTable .card-name { font-size: 0.95rem; padding: 10px 8px; }
+            #myTable .icon-btn { width: 38px; height: 38px; margin: 0 2px; }
         }
     </style>
 </head>
 
-<body id="body" class="bodlight">
+<body>
 
-    <!-- ========================================================================== -->
-    <!-- BARRE DE MENU SUPÉRIEURE                                                  -->
-    <!-- ========================================================================== -->
-    <div id="search" class="search-bar searchlight">
-        <!-- Bouton bascule de thème -->
-        <button style="background-image: url(images/theme.png);" onclick="theme()" title="Thème Sombre/Clair"></button>
-        <!-- Champ de recherche de cartes -->
-        <input type="text" id="myInput" class="myInputlight" onkeyup="search()" placeholder="Rechercher">
-        <!-- Bouton filtre RGB -->
-        <button style="background-image: url(images/RGB.png);" onclick="RGB()" id="myBtn" title="Filtrer"></button>
-        
-        <!-- Accès aux cartes en main avec badge compteur -->
-        <div class="badge-wrapper">
-            <button style="background-image: url(images/cartes.png);" onclick="affjeu()" title="Cartes en Main"></button>
-            <div id="nbcartes" style="display: none;" class="nbcard">0</div>
-        </div>
-        
-        <!-- Accès aux pièges actifs avec badge compteur -->
-        <div class="badge-wrapper">
-            <button style="background-image: url(images/trap.png);" onclick="afftrap()" title="Pièges Actifs"></button>
-            <div id="nbpieges" style="display: none;" class="nbcard">0</div>
-        </div>
+    <!-- ====================================================================== -->
+    <!-- VUE 1 : LISTE DES CARTES                                               -->
+    <!-- ====================================================================== -->
+    <div id="vue-liste">
+        <header class="search-bar">
+            <button class="icon-btn btn-theme" data-action="toggle-theme"
+                    title="Thème sombre / clair" aria-label="Changer de thème"></button>
 
-        <!-- Bouton d'affichage des règles -->
-        <button style="background-image: url(images/rules.png);" onclick="affrules()" title="Règles du jeu"></button>
+            <input type="text" id="myInput" class="search-input" placeholder="Rechercher"
+                   aria-label="Rechercher une carte" autocomplete="off">
+
+            <button class="icon-btn btn-filter" id="listFilterBtn" data-filter=""
+                    data-action="cycle-list-filter" title="Filtrer par type"
+                    aria-label="Filtrer par type de carte"></button>
+
+            <div class="badge-wrapper">
+                <button class="icon-btn btn-cards" data-action="open-hand"
+                        title="Cartes en main" aria-label="Cartes en main"></button>
+                <span id="nbcartes" class="nbcard" hidden>0</span>
+            </div>
+
+            <div class="badge-wrapper">
+                <button class="icon-btn btn-trap" data-action="open-traps"
+                        title="Pièges actifs" aria-label="Pièges actifs"></button>
+                <span id="nbpieges" class="nbcard" hidden>0</span>
+            </div>
+
+            <button class="icon-btn btn-rules" data-action="open-rules"
+                    title="Règles du jeu" aria-label="Règles du jeu"></button>
+        </header>
+
+        <!-- Les lignes sont générées en JS depuis cartes.json -->
+        <table id="myTable"></table>
+        <p id="result" class="result-msg" hidden>Aucune carte trouvée</p>
     </div>
 
-    <!-- ========================================================================== -->
-    <!-- TABLEAU PRINCIPAL DE LISTING                                               -->
-    <!-- ========================================================================== -->
-    <table id="myTable">
-        <!-- Généré dynamiquement en JS depuis cartes.json -->
-    </table>
-    <p id="result" class="result-msg" style="display: none;">Aucune carte trouvée</p>
-
-    <!-- ========================================================================== -->
-    <!-- CONTENEUR DE LA VUE "CARTES EN MAIN"                                     -->
-    <!-- ========================================================================== -->
-    <div id="jeu" class="view-container">
-        <div id="fdiv" class="fdiv fdivlight">
-            <button class="action-btn" onclick="hidejeu()">Retour</button>
-            <button style="background-image: url(images/RGB.png);" onclick="RGBGame()" id="myGameBtn" title="Filtrer"></button>
-            <button class="action-btn danger-btn" onclick="clearGame()">Vider</button>
+    <!-- ====================================================================== -->
+    <!-- VUE 2 : CARTES EN MAIN                                                 -->
+    <!-- ====================================================================== -->
+    <div id="jeu" class="view-container" hidden>
+        <div class="toolbar">
+            <button class="action-btn" data-action="back">Retour</button>
+            <button class="icon-btn btn-filter" id="handFilterBtn" data-filter=""
+                    data-action="cycle-hand-filter" title="Filtrer par type"
+                    aria-label="Filtrer par type de carte"></button>
+            <button class="action-btn danger-btn" data-action="clear">Vider</button>
         </div>
-        <div id="tablejeu"></div>
+        <div id="tablejeu" class="fan"></div>
     </div>
 
-    <!-- ========================================================================== -->
-    <!-- CONTENEUR DE LA VUE "PIÈGES ACTIFS"                                        -->
-    <!-- ========================================================================== -->
-    <div id="trap" class="view-container">
-        <div id="sdiv" class="fdiv fdivlight">
-            <button class="action-btn" onclick="hidetrap()">Retour</button>
+    <!-- ====================================================================== -->
+    <!-- VUE 3 : PIÈGES ACTIFS                                                  -->
+    <!-- ====================================================================== -->
+    <div id="trap" class="view-container" hidden>
+        <div class="toolbar">
+            <button class="action-btn" data-action="back">Retour</button>
         </div>
-        <div id="tabletrap"></div>
+        <div id="tabletrap" class="fan"></div>
     </div>
 
-    <!-- ========================================================================== -->
-    <!-- MODALE DE ZOOM D'UNE CARTE                                                 -->
-    <!-- ========================================================================== -->
-    <div id="affcard" onclick="this.style.display='none'"></div>
+    <!-- ====================================================================== -->
+    <!-- SUPERPOSITIONS : un clic ferme (data-action="close"), Échap aussi      -->
+    <!-- ====================================================================== -->
+    <div id="affcard" class="overlay" data-action="close" hidden></div>
 
-    <!-- ========================================================================== -->
-    <!-- ÉCRAN D'AFFICHAGE DES RÈGLES                                               -->
-    <!-- ========================================================================== -->
-    <div id="zerules" onclick="this.style.display='none'; document.getElementById('myTable').style.display='table';"
-         style="position:fixed; inset:0; background:rgba(0,0,0,0.8); display:none; z-index:100; text-align:center; padding:20px; overflow-y:auto;">
-        <img width="80%" src="images/rules1.png" style="margin-bottom:10px;"><br>
-        <img width="80%" src="images/rules2.png" style="margin-bottom:10px;"><br>
-        <img width="80%" src="images/rules3.png" style="margin-bottom:10px;"><br>
-        <img width="80%" src="images/rules4.png">
+    <div id="zerules" class="overlay" data-action="close" hidden>
+        <img src="images/rules1.png" alt="Règles du jeu, page 1">
+        <img src="images/rules2.png" alt="Règles du jeu, page 2">
+        <img src="images/rules3.png" alt="Règles du jeu, page 3">
+        <img src="images/rules4.png" alt="Règles du jeu, page 4">
     </div>
 
-    <!-- ========================================================================== -->
-    <!-- SCRIPT LOGIQUE DE L'APPLICATION                                            -->
-    <!-- ========================================================================== -->
     <script>
-        let light = 0, colsel = "", gameColsel = "";
-        let activeCards = JSON.parse(localStorage.getItem('muffin_activeCards')) || [];
-        let activeTraps = JSON.parse(localStorage.getItem('muffin_activeTraps')) || [];
+        'use strict';
 
-        // Chargement initial du fichier JSON des cartes et construction du tableau
-        document.addEventListener("DOMContentLoaded", async function() {
-            try {
-                let response = await fetch('cartes.json');
-                let data = await response.json();
-                
-                data.sort((a, b) => a.nom.localeCompare(b.nom));
-                
-                let aff = '';
-                let ip = 0;
+        /* ================================================================== */
+        /* 1. CONSTANTES                                                      */
+        /* ================================================================== */
+        const MAX_TRAPS = 3;
 
-                data.forEach(card => {
-                    ip++;
-                    let typecol = "rgba(0, 0, 255, 0.15)";
-                    let coul = "Blue";
+        // Type dans cartes.json -> couleur utilisée pour l'affichage et le filtre
+        const TYPE_COLOR = { action: 'Blue', counter: 'Green', trap: 'Red' };
 
-                    if (card.type === 'action') { typecol = "rgba(0, 0, 255, 0.15);"; coul = "Blue"; }
-                    else if (card.type === 'counter') { typecol = "rgba(0, 128, 0, 0.15);"; coul = "Green"; }
-                    else if (card.type === 'trap') { typecol = "rgba(255, 0, 0, 0.15);"; coul = "Red"; }
+        // Ordre du bouton de filtre : tous -> rouge -> vert -> bleu -> tous
+        const FILTER_CYCLE = ['', 'Red', 'Green', 'Blue'];
 
-                    let isInGame = activeCards.some(c => c.btnId === `btn-${ip}`);
-                    let isInTrap = activeTraps.some(t => t.btnId === `btn-${ip}`);
-                    let displayStyle = (isInGame || isInTrap) ? 'display: none;' : '';
+        const KEYS = {
+            hand: 'muffin_hand',
+            traps: 'muffin_traps',
+            theme: 'muffin_theme',
+            // Anciennes clés (avant refonte), lues une fois pour ne pas perdre la sauvegarde
+            legacyHand: 'muffin_activeCards',
+            legacyTraps: 'muffin_activeTraps',
+        };
 
-                    aff += `<tr data-type="${coul}" data-btnid="btn-${ip}">
-                        <td align="center" width="70%" class="tdlight ${coul}" style="background-color:${typecol} border-radius: 8px 0 0 8px;">${card.nom}</td>
-                        <td width="30%" align="center" class="tdlight" style="border-radius: 0 8px 8px 0;">
-                            <button id="btn-${ip}" onclick="this.style.display = "none";add('${card.photo}', 'btn-${ip}', '${coul}')" style="background-image: url(images/plus.png); width:45px; height:45px; ${displayStyle}"></button>
-                            <button onclick="affphoto('${card.photo}')" style="background-image: url(images/oeil.png); width:45px; height:45px; margin-left: 5px;"></button>
-                        </td>
-                    </tr>`;
-                });
+        /* ================================================================== */
+        /* 2. OUTILS                                                          */
+        /* ================================================================== */
+        const $ = id => document.getElementById(id);
 
-                document.getElementById("myTable").innerHTML = aff;
-                restoreSavedState();
-            } catch (error) {
-                console.error("Erreur de chargement du fichier JSON :", error);
-            }
-        });
+        // Échappe le texte inséré dans du HTML (noms de cartes avec " ou ', etc.)
+        const esc = s => String(s).replace(/[&<>"']/g, c => (
+            { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+        ));
 
-        // Gestion de la sélection interactive des cartes dans les vues d'éventail
-        document.addEventListener('click', function(event) {
-            let cardDiv = event.target.closest('#tablejeu > div, #tabletrap > div');
-            
-            if (cardDiv) {
-                let parentContainer = cardDiv.parentElement;
-                Array.from(parentContainer.children).forEach(child => {
-                    if (child !== cardDiv) child.classList.remove('card-active');
-                });
-                cardDiv.classList.toggle('card-active');
-            } else {
-                document.querySelectorAll('#tablejeu > div, #tabletrap > div').forEach(child => {
-                    child.classList.remove('card-active');
-                });
-            }
-        });
+        // "Épée Rapide" -> "epee rapide" (recherche insensible à la casse et aux accents)
+        const normalize = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 
-        // Sauvegarde de l'état actuel dans le stockage local du navigateur
+        // localStorage sans risque de plantage (mode privé, données corrompues...)
+        const store = {
+            read(key) {
+                try { return JSON.parse(localStorage.getItem(key)); }
+                catch { return null; }
+            },
+            write(key, value) {
+                try { localStorage.setItem(key, JSON.stringify(value)); }
+                catch { /* stockage indisponible : l'appli fonctionne quand même */ }
+            },
+        };
+
+        /* ================================================================== */
+        /* 3. ÉTAT DE L'APPLICATION                                           */
+        /*    hand et traps ne contiennent que les identifiants (card.photo). */
+        /*    Tout l'affichage se déduit de cet état.                         */
+        /* ================================================================== */
+        const state = {
+            cards: [],            // toutes les cartes, triées par nom
+            byPhoto: new Map(),   // photo -> carte
+            hand: [],
+            traps: [],
+            listFilter: '',
+            handFilter: '',
+        };
+
+        const els = {
+            views: { list: $('vue-liste'), hand: $('jeu'), traps: $('trap') },
+            input: $('myInput'),
+            table: $('myTable'),
+            result: $('result'),
+            listFilterBtn: $('listFilterBtn'),
+            handFilterBtn: $('handFilterBtn'),
+            badgeHand: $('nbcartes'),
+            badgeTraps: $('nbpieges'),
+            hand: $('tablejeu'),
+            traps: $('tabletrap'),
+            zoom: $('affcard'),
+            rules: $('zerules'),
+        };
+
+        /* ================================================================== */
+        /* 4. CHARGEMENT ET SAUVEGARDE                                        */
+        /* ================================================================== */
+        async function loadCards() {
+            const response = await fetch('cartes.json');
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+
+            state.cards = data
+                .map(card => ({ ...card, color: TYPE_COLOR[card.type] ?? 'Blue' }))
+                .sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
+            state.byPhoto = new Map(state.cards.map(card => [card.photo, card]));
+        }
+
+        function loadSavedList(key, legacyKey) {
+            const keepStrings = list => list.filter(item => typeof item === 'string');
+
+            const saved = store.read(key);
+            if (Array.isArray(saved)) return keepStrings(saved);
+
+            // Migration depuis l'ancien format : [{ img, btnId, coul }, ...]
+            const legacy = store.read(legacyKey);
+            if (Array.isArray(legacy)) return keepStrings(legacy.map(item => item?.img));
+
+            return [];
+        }
+
         function saveState() {
-            localStorage.setItem('muffin_activeCards', JSON.stringify(activeCards));
-            localStorage.setItem('muffin_activeTraps', JSON.stringify(activeTraps));
-            updateBadges();
+            store.write(KEYS.hand, state.hand);
+            store.write(KEYS.traps, state.traps);
         }
 
-        // Restauration des cartes en main et en pièges au démarrage
-        function restoreSavedState() {
-            activeCards.forEach(item => {
-                let btn = document.getElementById(item.btnId);
-                if (btn) btn.style.display = "none";
-                renderCardElement(item.img, item.btnId, "tablejeu", "div-", item.coul);
+        /* ================================================================== */
+        /* 5. AFFICHAGE : LISTE DES CARTES                                    */
+        /* ================================================================== */
+        function renderTable() {
+            els.table.innerHTML = state.cards.map(card => `
+                <tr data-type="${card.color}" data-photo="${esc(card.photo)}"
+                    data-search="${esc(normalize(card.nom))}">
+                    <td class="card-name">${esc(card.nom)}</td>
+                    <td class="card-actions">
+                        <button class="icon-btn btn-plus add-btn" data-action="add"
+                                aria-label="Ajouter ${esc(card.nom)} à la main"></button>
+                        <button class="icon-btn btn-eye" data-action="zoom"
+                                aria-label="Voir ${esc(card.nom)}"></button>
+                    </td>
+                </tr>`).join('');
+        }
+
+        // Recherche texte + filtre de couleur
+        function filterTable() {
+            const query = normalize(els.input.value.trim());
+            let visibleCount = 0;
+
+            els.table.querySelectorAll('tr').forEach(row => {
+                const matchesText = row.dataset.search.includes(query);
+                const matchesColor = !state.listFilter || row.dataset.type === state.listFilter;
+                row.hidden = !(matchesText && matchesColor);
+                if (!row.hidden) visibleCount++;
             });
-            activeTraps.forEach(item => {
-                let btn = document.getElementById(item.btnId);
-                if (btn) btn.style.display = "none";
-                renderCardElement(item.img, item.btnId, "tabletrap", "tdiv-", item.coul);
+
+            els.result.textContent = 'Aucune carte trouvée';
+            els.result.hidden = visibleCount > 0;
+        }
+
+        // Cache le bouton "+" des cartes déjà en main ou en piège.
+        // C'est LA SEULE fonction qui gère ces boutons.
+        function syncAddButtons() {
+            const owned = new Set([...state.hand, ...state.traps]);
+            els.table.querySelectorAll('tr').forEach(row => {
+                row.querySelector('.add-btn').hidden = owned.has(row.dataset.photo);
             });
-            updateBadges();
         }
 
-        // Création dynamique d'un élément visuel de carte dans les conteneurs d'éventail
-        function renderCardElement(img, btnId, targetTableId, divPrefix, coul = "Blue") {
-            let container = document.createElement("div");
-            container.style.position = 'relative';
-            container.id = divPrefix + btnId;
-            container.setAttribute("data-type", coul);
-            
-            let trashAction = targetTableId === "tablejeu" ? `deleteimg('${btnId}', this.parentElement)` : `deletetrap('${btnId}', this.parentElement)`;
-            let content = `<img src="images/${img}.png" width="100%" style="border-radius:8px;"><button class="trash" onclick="${trashAction}">🗑️</button>`;
-            
-            if (img.includes('trap') && targetTableId === "tablejeu") {
-                content += `<button class="trap-btn" onclick="gotrap('${img}', '${btnId}', this.parentElement, '${coul}')">🪤</button>`;
-            }
-            
-            container.innerHTML = content;
-            document.getElementById(targetTableId).appendChild(container);
-            updateFanRotations(targetTableId);
-            if (targetTableId === "tablejeu") filterGameCards();
+        /* ================================================================== */
+        /* 6. AFFICHAGE : ÉVENTAILS (main et pièges)                          */
+        /* ================================================================== */
+        function createFanCard(card, inHand) {
+            const el = document.createElement('div');
+            el.className = 'fan-card';
+            el.dataset.photo = card.photo;
+            el.dataset.type = card.color;
+
+            const removeAction = inHand ? 'remove-hand' : 'remove-trap';
+            const trapButton = (inHand && card.type === 'trap')
+                ? `<button class="card-btn trap-btn" data-action="to-trap"
+                           aria-label="Poser ${esc(card.nom)} en piège actif">🪤</button>`
+                : '';
+
+            el.innerHTML = `
+                <img src="images/${esc(card.photo)}.png" alt="${esc(card.nom)}">
+                <button class="card-btn trash" data-action="${removeAction}"
+                        aria-label="Retirer ${esc(card.nom)}">🗑️</button>
+                ${trapButton}`;
+            return el;
         }
 
-        // Calcul dynamique des rotations pour l'effet d'éventail des cartes
-        function updateFanRotations(tableId) {
-            let container = document.getElementById(tableId);
-            let cards = container.children;
-            let total = cards.length;
-            
-            Array.from(cards).forEach((card, index) => {
+        // Incline chaque carte visible pour former l'éventail
+        function applyFanRotations(container) {
+            const cards = Array.from(container.children);
+            const total = cards.length;
+
+            cards.forEach((el, index) => {
                 if (total <= 1) {
-                    card.style.transform = "rotate(0deg) translateY(0px)";
-                } else {
-                    let angleStep = Math.min(25 / (total - 1), 6);
-                    let angle = (index - (total - 1) / 2) * angleStep;
-                    let translateY = Math.abs(index - (total - 1) / 2) * 4;
-                    card.style.transform = `rotate(${angle}deg) translateY(${translateY}px)`;
+                    el.style.transform = 'rotate(0deg) translateY(0px)';
+                    return;
                 }
+                const step = Math.min(25 / (total - 1), 6);
+                const offset = index - (total - 1) / 2;
+                el.style.transform = `rotate(${offset * step}deg) translateY(${Math.abs(offset) * 4}px)`;
             });
         }
 
-        // Bascule du mode d'affichage clair/sombre
-        function theme() {
-            light = light === 0 ? 1 : 0;
-            document.getElementById("body").classList.toggle("boddark", light === 1);
-            document.getElementById("body").classList.toggle("bodlight", light === 0);
-            document.getElementById("search").classList.toggle("searchdark", light === 1);
-            document.getElementById("search").classList.toggle("searchlight", light === 0);
-            document.getElementById("myInput").classList.toggle("myInputdark", light === 1);
-            document.getElementById("myInput").classList.toggle("myInputlight", light === 0);
+        function renderFan(container, photos, inHand, colorFilter = '') {
+            const scrollPosition = container.scrollLeft;   // évite de revenir au début à chaque retrait
 
-            document.querySelectorAll("#myTable td").forEach(td => {
-                td.classList.toggle("tddark", light === 1);
-                td.classList.toggle("tdlight", light === 0);
+            container.replaceChildren();
+            photos
+                .map(photo => state.byPhoto.get(photo))
+                .filter(card => card && (!colorFilter || card.color === colorFilter))
+                .forEach(card => container.appendChild(createFanCard(card, inHand)));
+
+            applyFanRotations(container);
+            container.scrollLeft = scrollPosition;
+        }
+
+        const renderHand = () => renderFan(els.hand, state.hand, true, state.handFilter);
+        const renderTraps = () => renderFan(els.traps, state.traps, false);
+
+        function setBadge(el, count) {
+            el.textContent = count;
+            el.hidden = count === 0;
+        }
+
+        // Rafraîchit tout ce qui dépend de hand / traps
+        function renderAll() {
+            syncAddButtons();
+            renderHand();
+            renderTraps();
+            setBadge(els.badgeHand, state.hand.length);
+            setBadge(els.badgeTraps, state.traps.length);
+        }
+
+        // Toute modification de l'état passe par ici
+        function commit() {
+            saveState();
+            renderAll();
+        }
+
+        /* ================================================================== */
+        /* 7. ACTIONS SUR LES CARTES                                          */
+        /* ================================================================== */
+        function addToHand(photo) {
+            if (!state.byPhoto.has(photo)) return;
+            if (state.hand.includes(photo) || state.traps.includes(photo)) return;
+            state.hand.push(photo);
+            commit();
+        }
+
+        function removeFromHand(photo) {
+            state.hand = state.hand.filter(p => p !== photo);
+            commit();
+        }
+
+        function moveToTrap(photo) {
+            if (state.traps.length >= MAX_TRAPS) {
+                alert(`${MAX_TRAPS} pièges actifs Max !`);
+                return;
+            }
+            state.hand = state.hand.filter(p => p !== photo);
+            state.traps.push(photo);
+            commit();
+        }
+
+        function removeTrap(photo) {
+            state.traps = state.traps.filter(p => p !== photo);
+            commit();
+        }
+
+        function clearAll() {
+            if (!confirm('Vider tout le plateau et les pièges ?')) return;
+            state.hand = [];
+            state.traps = [];
+            commit();
+        }
+
+        function zoomCard(photo) {
+            const card = state.byPhoto.get(photo);
+            if (!card) return;
+            els.zoom.innerHTML = `<img src="images/${esc(photo)}.png" alt="${esc(card.nom)}">`;
+            els.zoom.hidden = false;
+        }
+
+        /* ================================================================== */
+        /* 8. NAVIGATION, FILTRES ET THÈME                                    */
+        /* ================================================================== */
+        function showView(name) {
+            // À l'entrée dans une vue, son filtre repart sur "tous"
+            if (name === 'list') {
+                state.listFilter = '';
+                setFilterButton(els.listFilterBtn, '');
+                filterTable();
+            }
+            if (name === 'hand') {
+                state.handFilter = '';
+                setFilterButton(els.handFilterBtn, '');
+                renderHand();
+            }
+            Object.entries(els.views).forEach(([key, view]) => { view.hidden = key !== name; });
+        }
+
+        const nextFilter = current => FILTER_CYCLE[(FILTER_CYCLE.indexOf(current) + 1) % FILTER_CYCLE.length];
+
+        // L'icône du bouton se choisit en CSS grâce à l'attribut data-filter
+        function setFilterButton(button, value) {
+            button.dataset.filter = value;
+        }
+
+        function setTheme(isDark) {
+            document.body.classList.toggle('dark', isDark);
+            store.write(KEYS.theme, isDark ? 'dark' : 'light');
+        }
+
+        /* ================================================================== */
+        /* 9. ÉVÉNEMENTS                                                      */
+        /*    Un seul écouteur de clic : chaque bouton porte un data-action.  */
+        /* ================================================================== */
+        // Chaque action reçoit l'identifiant de la carte (si le clic est sur une
+        // carte ou une ligne) et l'élément qui porte data-action.
+        const actions = {
+            'toggle-theme': () => setTheme(!document.body.classList.contains('dark')),
+
+            'cycle-list-filter': () => {
+                state.listFilter = nextFilter(state.listFilter);
+                setFilterButton(els.listFilterBtn, state.listFilter);
+                filterTable();
+            },
+            'cycle-hand-filter': () => {
+                state.handFilter = nextFilter(state.handFilter);
+                setFilterButton(els.handFilterBtn, state.handFilter);
+                renderHand();
+            },
+
+            'open-hand': () => showView('hand'),
+            'open-traps': () => showView('traps'),
+            'open-rules': () => { els.rules.hidden = false; },
+            'back': () => showView('list'),
+            'close': (_photo, element) => { element.hidden = true; },
+            'clear': clearAll,
+
+            'add': addToHand,
+            'zoom': zoomCard,
+            'remove-hand': removeFromHand,
+            'to-trap': moveToTrap,
+            'remove-trap': removeTrap,
+        };
+
+        document.addEventListener('click', event => {
+            // Carte de l'éventail : une seule peut être "levée" à la fois
+            const fanCard = event.target.closest('.fan-card');
+            document.querySelectorAll('.fan-card.card-active').forEach(el => {
+                if (el !== fanCard) el.classList.remove('card-active');
             });
-        }
+            if (fanCard) fanCard.classList.toggle('card-active');
 
-        // Affichage de la photo d'une carte en grand (Zoom)
-        function affphoto(sup) {
-            let div = document.getElementById('affcard');
-            div.innerHTML = `<img src="images/${sup}.png" border="0">`;
-            div.style.display = "flex";
-        }
+            // Bouton d'action
+            const target = event.target.closest('[data-action]');
+            if (!target) return;
+            const photo = target.closest('[data-photo]')?.dataset.photo;
+            actions[target.dataset.action]?.(photo, target);
+        });
 
-        // Affichage des règles du jeu
-        function affrules() {
-            document.getElementById('zerules').style.display = "block";
-            document.getElementById('myTable').style.display = "none";
-        }
+        els.input.addEventListener('input', filterTable);
 
-        // Passage à la vue "Cartes en main"
-        function affjeu() {
-            gameColsel = "";
-            document.getElementById('myGameBtn').style.backgroundImage = 'url(images/RGB.png)';
-            filterGameCards();
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape') {
+                els.zoom.hidden = true;
+                els.rules.hidden = true;
+            }
+        });
 
-            document.getElementById('jeu').style.display = "flex";
-            document.getElementById('myTable').style.display = "none";
-            document.getElementById('search').style.display = "none";
-        }
+        /* ================================================================== */
+        /* 10. DÉMARRAGE                                                      */
+        /* ================================================================== */
+        async function init() {
+            setTheme(store.read(KEYS.theme) === 'dark');
 
-        // Retour au tableau principal depuis la vue "Cartes en main"
-        function hidejeu() {
-            colsel = ""; 
-            document.getElementById('myBtn').style.backgroundImage = 'url(images/RGB.png)';
-            document.getElementById('myTable').style.display = "table";
-            document.getElementById('jeu').style.display = "none";
-            document.getElementById('search').style.display = "flex";
-        }
-
-        // Passage à la vue "Pièges actifs"
-        function afftrap() {
-            document.getElementById('trap').style.display = "flex";
-            document.getElementById('myTable').style.display = "none";
-            document.getElementById('search').style.display = "none";
-        }
-
-        // Retour au tableau principal depuis la vue "Pièges actifs"
-        function hidetrap() {
-            colsel = ""; 
-            document.getElementById('myBtn').style.backgroundImage = 'url(images/RGB.png)';
-            document.getElementById('myTable').style.display = "table";
-            document.getElementById('trap').style.display = "none";
-            document.getElementById('search').style.display = "flex";
-        }
-
-        // Ajout d'une carte dans la main du joueur
-        function add(img, btnId, coul) {
-            activeCards.push({ img, btnId, coul });
-            saveState();
-            renderCardElement(img, btnId, "tablejeu", "div-", coul);
-        }
-
-        // Suppression d'une carte de la main
-        function deleteimg(btnId, element) {
-            let btn = document.getElementById(btnId);
-            if(btn) btn.style.display = "inline-block";
-
-            activeCards = activeCards.filter(c => c.btnId !== btnId);
-            element.remove();
-            saveState();
-            updateFanRotations("tablejeu");
-        }
-
-        // Déplacement d'une carte action vers les pièges actifs
-        function gotrap(img, btnId, element, coul) {
-            if (activeTraps.length >= 3) {
-                alert("3 pièges actifs Max !");
+            try {
+                await loadCards();
+            } catch (error) {
+                console.error('Erreur de chargement du fichier JSON :', error);
+                els.result.textContent = 'Impossible de charger les cartes.';
+                els.result.hidden = false;
                 return;
             }
 
-            activeCards = activeCards.filter(c => c.btnId !== btnId);
-            element.remove();
-            updateFanRotations("tablejeu");
+            // Récupère la sauvegarde et ignore les cartes qui n'existent plus dans le JSON
+            state.hand = loadSavedList(KEYS.hand, KEYS.legacyHand).filter(p => state.byPhoto.has(p));
+            state.traps = loadSavedList(KEYS.traps, KEYS.legacyTraps).filter(p => state.byPhoto.has(p));
 
-            activeTraps.push({ img, btnId, coul });
-            saveState();
-            renderCardElement(img, btnId, "tabletrap", "tdiv-", coul);
+            renderTable();
+            filterTable();
+            commit();
         }
 
-        // Suppression d'un piège actif
-        function deletetrap(btnId, element) {
-            let btn = document.getElementById(btnId);
-            if(btn) btn.style.display = "inline-block";
-
-            activeTraps = activeTraps.filter(t => t.btnId !== btnId);
-            element.remove();
-            saveState();
-            updateFanRotations("tabletrap");
-        }
-
-        // Réinitialisation complète du plateau (jeu et pièges)
-        function clearGame() {
-            if(confirm("Vider tout le plateau et les pièges ?")) {
-                activeCards.forEach(c => {
-                    let b = document.getElementById(c.btnId);
-                    if(b) b.style.display = "inline-block";
-                });
-                activeTraps.forEach(t => {
-                    let b = document.getElementById(t.btnId);
-                    if(b) b.style.display = "inline-block";
-                });
-
-                activeCards = [];
-                activeTraps = [];
-                localStorage.removeItem('muffin_activeCards');
-                localStorage.removeItem('muffin_activeTraps');
-
-                document.getElementById("tablejeu").innerHTML = "";
-                document.getElementById("tabletrap").innerHTML = "";
-                updateBadges();
-            }
-        }
-
-        // Mise à jour visuelle des compteurs sur les badges de navigation
-        function updateBadges() {
-            let countCards = activeCards.length;
-            let badgeCards = document.getElementById('nbcartes');
-            if (countCards > 0) {
-                badgeCards.style.display = "inline-block";
-                badgeCards.innerText = countCards;
-            } else {
-                badgeCards.style.display = "none";
-            }
-
-            let countTraps = activeTraps.length;
-            let badgeTraps = document.getElementById('nbpieges');
-            if (countTraps > 0) {
-                badgeTraps.style.display = "inline-block";
-                badgeTraps.innerText = countTraps;
-            } else {
-                badgeTraps.style.display = "none";
-            }
-        }
-
-        // Fonction de recherche textuelle et filtrage par état actif/inactif
-        function search() {
-            let input = document.getElementById("myInput").value.toUpperCase();
-            let tr = document.getElementById("myTable").getElementsByTagName("tr");
-            let hey = 0;
-
-            for (let i = 0; i < tr.length; i++) {
-                let td = tr[i].getElementsByTagName("td")[0];
-                if (td) {
-                    let txtValue = td.textContent || td.innerText;
-                    let matchesSearch = txtValue.toUpperCase().includes(input);
-                    let matchesColor = colsel === "" || tr[i].getAttribute("data-type") === colsel;
-
-                    if (matchesSearch && matchesColor) {
-                        tr[i].style.display = "";
-                        hey++;
-                        
-                        // S'assure que le bouton reste masqué si la carte est déjà en main ou en piège lors du filtrage/recherche
-                        let btnId = tr[i].getAttribute("data-btnid");
-                        let isOwned = activeCards.some(c => c.btnId === btnId) || activeTraps.some(t => t.btnId === btnId);
-                        let btn = document.getElementById(btnId);
-                        if (btn) {
-                            btn.style.display = isOwned ? "none" : "inline-block";
-                        }
-                    } else {
-                        tr[i].style.display = "none";
-                    }
-                }
-            }
-            document.getElementById('result').style.display = (hey === 0) ? "block" : "none";
-        }
-
-        // Filtre cyclique par type de carte (RGB) sur le tableau principal
-        function RGB() {
-            if (colsel === "") { colsel = "Red"; document.getElementById('myBtn').style.backgroundImage = 'url(images/R.png)'; }
-            else if (colsel === "Red") { colsel = "Green"; document.getElementById('myBtn').style.backgroundImage = 'url(images/G.png)'; }
-            else if (colsel === "Green") { colsel = "Blue"; document.getElementById('myBtn').style.backgroundImage = 'url(images/B.png)'; }
-            else { colsel = ""; document.getElementById('myBtn').style.backgroundImage = 'url(images/RGB.png)'; }
-            search();
-        }
-
-        // Filtre cyclique par type de carte (RGB) dans la vue "Cartes en main"
-        function RGBGame() {
-            if (gameColsel === "") { gameColsel = "Red"; document.getElementById('myGameBtn').style.backgroundImage = 'url(images/R.png)'; }
-            else if (gameColsel === "Red") { gameColsel = "Green"; document.getElementById('myGameBtn').style.backgroundImage = 'url(images/G.png)'; }
-            else if (gameColsel === "Green") { gameColsel = "Blue"; document.getElementById('myGameBtn').style.backgroundImage = 'url(images/B.png)'; }
-            else { gameColsel = ""; document.getElementById('myGameBtn').style.backgroundImage = 'url(images/RGB.png)'; }
-            filterGameCards();
-        }
-
-        // Application du filtre visuel dans la vue des cartes en main
-        function filterGameCards() {
-            let cards = document.getElementById("tablejeu").children;
-            for (let card of cards) {
-                let cardType = card.getAttribute("data-type");
-                if (gameColsel === "" || cardType === gameColsel) {
-                    card.style.display = "block";
-                } else {
-                    card.style.display = "none";
-                }
-            }
-        }
+        init();
     </script>
 </body>
 </html>
