@@ -84,6 +84,7 @@
             background-color: rgba(255, 255, 255, 0.8);
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             transition: var(--transition);
+            touch-action: manipulation; /* Évite le délai de zoom au tap sur mobile */
         }
 
         button:hover {
@@ -183,7 +184,6 @@
             justify-content: center;
             align-items: center;
             gap: 20px;
-            flex-wrap: wrap;
             border-radius: 12px;
         }
         .fdivlight { background: var(--header-light); }
@@ -395,7 +395,7 @@
                     aff += `<tr data-type="${coul}">
                         <td align="center" width="70%" class="tdlight ${coul}" style="background-color:${typecol} border-radius: 8px 0 0 8px;">${card.nom}</td>
                         <td width="30%" align="center" class="tdlight" style="border-radius: 0 8px 8px 0;">
-                            <button id="btn-${ip}" onclick="add('${card.photo}', 'btn-${ip}', '${coul}')" style="background-image: url(images/plus.png); width:45px; height:45px;"></button>
+                            <button id="btn-${ip}" onpointerdown="add('${card.photo}', 'btn-${ip}', '${coul}')" style="background-image: url(images/plus.png); width:45px; height:45px;"></button>
                             <button onclick="affphoto('${card.photo}')" style="background-image: url(images/oeil.png); width:45px; height:45px; margin-left: 5px;"></button>
                         </td>
                     </tr>`;
@@ -541,11 +541,10 @@
 
         function add(img, btnId, coul) {
             let btn = document.getElementById(btnId);
-            if (!btn || btn.style.display === "none") return; // Sécurité anti-double-clic / ajout en boucle sur mobile
+            if (!btn || btn.style.display === "none") return;
 
-            btn.style.display = "none"; // Masquage immédiat du bouton
+            btn.style.display = "none"; // Disparition immédiate dès l'appui tactile (pointerdown)
 
-            // Vérifier si la carte n'est pas déjà présente dans activeCards pour éviter les doublons
             if (!activeCards.some(c => c.btnId === btnId)) {
                 activeCards.push({ img, btnId, coul });
                 saveState();
