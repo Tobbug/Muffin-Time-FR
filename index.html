@@ -188,7 +188,7 @@
         .fdivlight { background: var(--header-light); }
         .fdivdark { background: var(--header-dark); }
 
-        #demo {
+        #affcard {
             position: fixed;
             inset: 0;
             background: rgba(0, 0, 0, 0.8);
@@ -199,7 +199,7 @@
             cursor: pointer;
         }
 
-        #demo img {
+        #affcard img {
             max-height: 85vh;
             border-radius: 12px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
@@ -356,7 +356,7 @@
     </div>
 
     <!-- MODALE PHOTO EN GRAND -->
-    <div id="demo" onclick="this.style.display='none'"></div>
+    <div id="affcard" onclick="this.style.display='none'"></div>
 
     <!-- RÈGLES -->
     <div id="zerules" onclick="this.style.display='none'; document.getElementById('myTable').style.display='table';"
@@ -500,7 +500,7 @@
         }
 
         function affphoto(sup) {
-            let div = document.getElementById('demo');
+            let div = document.getElementById('affcard');
             div.innerHTML = `<img src="images/${sup}.png" border="0">`;
             div.style.display = "flex";
         }
