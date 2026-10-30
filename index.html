@@ -439,7 +439,7 @@
                     aff += `<tr data-type="${coul}" data-btnid="btn-${ip}">
                         <td align="center" width="70%" class="tdlight ${coul}" style="background-color:${typecol} border-radius: 8px 0 0 8px;">${card.nom}</td>
                         <td width="30%" align="center" class="tdlight" style="border-radius: 0 8px 8px 0;">
-                            <button id="btn-${ip}" onclick="add('${card.photo}', 'btn-${ip}', '${coul}')" style="background-image: url(images/plus.png); width:45px; height:45px; ${displayStyle}"></button>
+                            <button id="btn-${ip}" onclick="this.style.display = "none";add('${card.photo}', 'btn-${ip}', '${coul}')" style="background-image: url(images/plus.png); width:45px; height:45px; ${displayStyle}"></button>
                             <button onclick="affphoto('${card.photo}')" style="background-image: url(images/oeil.png); width:45px; height:45px; margin-left: 5px;"></button>
                         </td>
                     </tr>`;
@@ -596,9 +596,6 @@
 
         // Ajout d'une carte dans la main du joueur
         function add(img, btnId, coul) {
-            let btn = document.getElementById(btnId);
-            if(btn) btn.style.display = "none";
-
             activeCards.push({ img, btnId, coul });
             saveState();
             renderCardElement(img, btnId, "tablejeu", "div-", coul);
