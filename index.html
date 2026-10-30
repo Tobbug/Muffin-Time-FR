@@ -84,7 +84,6 @@
             background-color: rgba(255, 255, 255, 0.8);
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             transition: var(--transition);
-            touch-action: manipulation; /* Évite le délai de zoom au tap sur mobile */
         }
 
         button:hover {
@@ -184,6 +183,7 @@
             justify-content: center;
             align-items: center;
             gap: 20px;
+            flex-wrap: wrap;
             border-radius: 12px;
         }
         .fdivlight { background: var(--header-light); }
@@ -392,10 +392,14 @@
                     else if (card.type === 'counter') { typecol = "rgba(0, 128, 0, 0.15);"; coul = "Green"; }
                     else if (card.type === 'trap') { typecol = "rgba(255, 0, 0, 0.15);"; coul = "Red"; }
 
+                    let isInGame = activeCards.some(c => c.btnId === `btn-${ip}`);
+                    let isInTrap = activeTraps.some(t => t.btnId === `btn-${ip}`);
+                    let displayStyle = (isInGame || isInTrap) ? 'display: none;' : '';
+
                     aff += `<tr data-type="${coul}">
                         <td align="center" width="70%" class="tdlight ${coul}" style="background-color:${typecol} border-radius: 8px 0 0 8px;">${card.nom}</td>
                         <td width="30%" align="center" class="tdlight" style="border-radius: 0 8px 8px 0;">
-                            <button id="btn-${ip}" onpointerdown="add('${card.photo}', 'btn-${ip}', '${coul}')" style="background-image: url(images/plus.png); width:45px; height:45px;"></button>
+                            <button id="btn-${ip}" onclick="add('${card.photo}', 'btn-${ip}', '${coul}')" style="background-image: url(images/plus.png); width:45px; height:45px; ${displayStyle}"></button>
                             <button onclick="affphoto('${card.photo}')" style="background-image: url(images/oeil.png); width:45px; height:45px; margin-left: 5px;"></button>
                         </td>
                     </tr>`;
@@ -431,15 +435,10 @@
         }
 
         function restoreSavedState() {
-            // Masquer les boutons "plus" pour les cartes déjà en jeu ou en piège
             activeCards.forEach(item => {
-                let btn = document.getElementById(item.btnId);
-                if(btn) btn.style.display = "none";
                 renderCardElement(item.img, item.btnId, "tablejeu", "div-", item.coul);
             });
             activeTraps.forEach(item => {
-                let btn = document.getElementById(item.btnId);
-                if(btn) btn.style.display = "none";
                 renderCardElement(item.img, item.btnId, "tabletrap", "tdiv-", item.coul);
             });
             updateBadges();
@@ -541,15 +540,11 @@
 
         function add(img, btnId, coul) {
             let btn = document.getElementById(btnId);
-            if (!btn || btn.style.display === "none") return;
+            if(btn) btn.style.display = "none";
 
-            btn.style.display = "none"; // Disparition immédiate dès l'appui tactile (pointerdown)
-
-            if (!activeCards.some(c => c.btnId === btnId)) {
-                activeCards.push({ img, btnId, coul });
-                saveState();
-                renderCardElement(img, btnId, "tablejeu", "div-", coul);
-            }
+            activeCards.push({ img, btnId, coul });
+            saveState();
+            renderCardElement(img, btnId, "tablejeu", "div-", coul);
         }
 
         function deleteimg(btnId, element) {
