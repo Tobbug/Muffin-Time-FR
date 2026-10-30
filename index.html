@@ -256,7 +256,7 @@
             max-width: 1000px;
             box-sizing: border-box;
             align-items: center;
-            justify-content: flex-start; /* Aligné au début pour que la première carte soit toujours visible */
+            justify-content: flex-start;
             -webkit-overflow-scrolling: touch;
         }
 
@@ -274,7 +274,7 @@
         }
 
         #tablejeu > div:first-child, #tabletrap > div:first-child {
-            margin-left: 20px; /* Marge à gauche pour éviter que la première carte soit coupée */
+            margin-left: 20px;
         }
 
         #tablejeu > div:hover, #tabletrap > div:hover,
@@ -541,11 +541,16 @@
 
         function add(img, btnId, coul) {
             let btn = document.getElementById(btnId);
-            if(btn) btn.style.display = "none";
+            if (!btn || btn.style.display === "none") return; // Sécurité anti-double-clic / ajout en boucle sur mobile
 
-            activeCards.push({ img, btnId, coul });
-            saveState();
-            renderCardElement(img, btnId, "tablejeu", "div-", coul);
+            btn.style.display = "none"; // Masquage immédiat du bouton
+
+            // Vérifier si la carte n'est pas déjà présente dans activeCards pour éviter les doublons
+            if (!activeCards.some(c => c.btnId === btnId)) {
+                activeCards.push({ img, btnId, coul });
+                saveState();
+                renderCardElement(img, btnId, "tablejeu", "div-", coul);
+            }
         }
 
         function deleteimg(btnId, element) {
@@ -584,7 +589,7 @@
         }
 
         function clearGame() {
-            if(confirm("Voulez-vous vraiment vider tout le plateau et les pièges ?")) {
+            if(confirm("Vider tout le plateau et les pièges ?")) {
                 activeCards.forEach(c => {
                     let b = document.getElementById(c.btnId);
                     if(b) b.style.display = "inline-block";
