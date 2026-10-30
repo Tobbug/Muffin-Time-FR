@@ -315,17 +315,17 @@
 
     <!-- BARRE DE RECHERCHE & MENU -->
     <div id="search" class="search-bar searchlight">
-        <button style="background-image: url(images/theme.png);" onclick="theme()" title="Changer de thème"></button>
-        <input type="text" id="myInput" class="myInputlight" onkeyup="search()" placeholder="Rechercher une carte...">
-        <button style="background-image: url(images/RGB.png);" onclick="RGB()" id="myBtn" title="Filtrer par type"></button>
+        <button style="background-image: url(images/theme.png);" onclick="theme()" title="Thème Sombre/Clair"></button>
+        <input type="text" id="myInput" class="myInputlight" onkeyup="search()" placeholder="Rechercher">
+        <button style="background-image: url(images/RGB.png);" onclick="RGB()" id="myBtn" title="Filtrer"></button>
         
         <div class="badge-wrapper">
-            <button style="background-image: url(images/cartes.png);" onclick="affjeu()" title="Voir les cartes en jeu"></button>
+            <button style="background-image: url(images/cartes.png);" onclick="affjeu()" title="Cartes en Main"></button>
             <div id="nbcartes" style="display: none;" class="nbcard">0</div>
         </div>
         
         <div class="badge-wrapper">
-            <button style="background-image: url(images/trap.png);" onclick="afftrap()" title="Voir les pièges"></button>
+            <button style="background-image: url(images/trap.png);" onclick="afftrap()" title="Pièges Actifs"></button>
             <div id="nbpieges" style="display: none;" class="nbcard">0</div>
         </div>
 
@@ -336,14 +336,14 @@
     <table id="myTable">
         <!-- Chargé dynamiquement via JS -->
     </table>
-    <p id="result" class="result-msg" style="display: none;">Aucun résultat trouvé</p>
+    <p id="result" class="result-msg" style="display: none;">Aucune carte trouvée</p>
 
     <!-- VUE JEU -->
     <div id="jeu" class="view-container">
         <div id="fdiv" class="fdiv fdivlight">
             <button class="action-btn" onclick="hidejeu()">Retour</button>
-            <button style="background-image: url(images/RGB.png);" onclick="RGBGame()" id="myGameBtn" title="Filtrer par type en main"></button>
-            <button class="action-btn danger-btn" onclick="clearGame()">Tout effacer</button>
+            <button style="background-image: url(images/RGB.png);" onclick="RGBGame()" id="myGameBtn" title="Filtrer"></button>
+            <button class="action-btn danger-btn" onclick="clearGame()">Vider</button>
         </div>
         <div id="tablejeu"></div>
     </div>
